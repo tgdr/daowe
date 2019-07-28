@@ -1,5 +1,6 @@
 package edu.buu.daowe.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -38,7 +39,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         fragmanager = getSupportFragmentManager();
-
+        transaction = fragmanager.beginTransaction();
+        transaction.replace(R.id.main_frame,new CheckInFragment()).commit();
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -121,6 +123,7 @@ public class MainActivity extends AppCompatActivity
             transaction.replace(R.id.main_frame,new CancellationFragment()).commit();
 
         } else if (id == R.id.nav_slideshow) {
+            startActivity(new Intent(MainActivity.this,CameraCollectionActivity.class));
 
         } else if (id == R.id.nav_tools) {
 

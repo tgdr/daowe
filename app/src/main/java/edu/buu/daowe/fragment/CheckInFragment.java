@@ -27,6 +27,8 @@ import edu.buu.daowe.DaoWeApplication;
 import edu.buu.daowe.R;
 import edu.buu.daowe.Util.RssiUtil;
 import edu.buu.daowe.Util.SharedPreferenceUtil;
+import edu.buu.daowe.activity.CameraCollectionActivity;
+import edu.buu.daowe.activity.MainActivity;
 import edu.buu.daowe.services.Receivedata;
 import edu.buu.daowe.services.ScanBeaconService;
 
@@ -78,10 +80,10 @@ public class CheckInFragment extends Fragment {
                   }
                  mys.setReceivedata(new Receivedata() {
                      @Override
-                     public void update(ScanResult scanResult) {
+                     public void update(final ScanResult scanResult) {
                      //    Log.e("innerinnerinner","iupupupupupupupupupu");
                          if (scanResult!=null){
-                         double distance = RssiUtil.getDistance(scanResult.getRssi());
+                         final double distance = RssiUtil.getDistance(scanResult.getRssi());
                          final String address =  scanResult.getDevice().getAddress();
                          mText.setText("rssi:"+scanResult.getRssi()+"\n"+"二者间的距离为"+distance);
                          if(distance<=20){
@@ -93,9 +95,15 @@ public class CheckInFragment extends Fragment {
                          btn_checkin.setOnClickListener(new View.OnClickListener() {
                              @Override
                              public void onClick(View v) {
-                                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
-                                         .setMessage("签到时间为"+new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss").format(new Date())+"\n"+"教室ID为："+address).setTitle("签到成功");
-                                 builder.show();
+                                 Intent myit = new Intent(getActivity(), CameraCollectionActivity.class);
+                                 Bundle mbundle = new Bundle();
+                                 mbundle.putDouble("distance",distance);
+                                 myit.putExtra("info",mbundle);
+                                 startActivity(myit);
+
+//                                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+//                                         .setMessage("签到时间为"+new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss").format(new Date())+"\n"+"教室ID为："+address).setTitle("签到成功");
+//                                 builder.show();
                              }
                          });
                      }
@@ -125,7 +133,7 @@ public class CheckInFragment extends Fragment {
 
         getActivity().bindService(intent,serviceConnection,getActivity().BIND_AUTO_CREATE);
 
-     //   getActivity().startForegroundService(intent);
+        getActivity().startForegroundService(intent);
 
 
     }

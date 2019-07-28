@@ -9,6 +9,13 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+        <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+        <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera2"></uses-feature>
+
+
+
     <application
         android:name=".DaoWeApplication"
         android:allowBackup="true"
@@ -17,7 +24,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="edu.buu.daowe.fileauthorities"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"
+                >
 
+            </meta-data>
+        </provider>
         <activity
             android:name=".activity.LoginActivity"
             android:configChanges="keyboardHidden|orientation"
@@ -31,8 +49,10 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter><action android:name="android.media.action.IMAGE_CAPTURE" />
+            <category android:name="android.intent.category.DEFAULT"></category></intent-filter>
         </activity>
-
+<activity android:name=".activity.CameraCollectionActivity"/>
         <service android:name=".services.ScanBeaconService">
             <intent-filter>
                 <action android:name="com.hungrytree.receiver.BleService"/>

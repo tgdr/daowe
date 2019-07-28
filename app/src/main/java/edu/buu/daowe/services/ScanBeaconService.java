@@ -39,7 +39,6 @@ import edu.buu.daowe.activity.MainActivity;
  */
 public class ScanBeaconService extends Service {
     Receivedata receivedata;
-    public Handler.Callback callback = null;
     int i =0;
     MyBinder binder;
     SharedPreferenceUtil sharedPreferenceUtil;
@@ -94,14 +93,14 @@ public class ScanBeaconService extends Service {
 //        startForeground(110, notification);
 //        NotificationManager mNotificationManager = ((NotificationManager) getSystemService(NOTIFICATION_SERVICE));
 //        mNotificationManager.startServiceInForeground(new Intent(this, ), NOTIFICATION_ID, notification);
-        Notification("正在工作");
+        Notification("系统在监视您的上课情况，请勿早退！");
 
         //指定扫描到蓝牙后是以什么方式通知到app端，这里将以可见服务的形式进行启动
         callbackIntent = PendingIntent.getForegroundService(
                 this,
                 1,
                 new Intent("com.hungrytree.receiver.BleService").setPackage(getPackageName()),
-                PendingIntent.FLAG_UPDATE_CURRENT );
+                PendingIntent.FLAG_UPDATE_CURRENT);
 
         onOpen();
 
@@ -335,12 +334,12 @@ public class ScanBeaconService extends Service {
 
 
         //启动蓝牙扫描
-      //  bluetoothAdapter.getBluetoothLeScanner().startScan(scanFilterList,settings,callbackIntent);
+       bluetoothAdapter.getBluetoothLeScanner().startScan(scanFilterList,settings,callbackIntent);
         ScanCallback callback2 = new ScanCallback() {
             @Override
             public void onScanResult(int callbackType, ScanResult result) {
                 super.onScanResult(callbackType, result);
-                Log.e("HHHHHHHHHHHH","HHHHHHHHHHHH");
+                Log.e("HHHHHHHHHHHH",result.toString());
             }
 
             @Override
