@@ -57,6 +57,7 @@ public class DaoWeApplication extends Application {
     private String username;
    private OkHttpClient okHttpClient;
     private static HandlerListener mListener;
+    //对于okhttpclient使用单例模式
     public static void setOnHandlerListener(HandlerListener listener) {
         mListener = listener;
     }
@@ -64,45 +65,6 @@ public class DaoWeApplication extends Application {
         return mListener;
     }
 
-/*
-    private volatile  static OkHttpClient client;
-    //让构造函数为 private，这样该类就不会被实例化
-    //获取唯一可用的对象
-    public   static OkHttpClient getInstance(){
-        if(client == null){
-            synchronized (BaseRequest.class) {
-                if(client == null){
-                    client = new OkHttpClient();
-                }
-            }
-        }
-        return client;
-    }
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    public static String httpGetString(String url) throws IOException {
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-
-        try (Response response = getInstance().newCall(request).execute()) {
-            return response.body().string();
-        }
-    }
-
-    public static final MediaType JSON
-            = MediaType.parse("application/json; charset=utf-8");
-
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    public static String httppostJson(String url, String json) throws IOException {
-        RequestBody body = RequestBody.create(JSON, json);
-        Request request = new Request.Builder()
-                .url(url)
-                .post(body)
-                .build();
-        try (Response response = getInstance().newCall(request).execute()) {
-            return response.body().string();
-        }
-    }*/
     @Override
     public void onCreate() {
         super.onCreate();

@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity
             transaction.replace(R.id.main_frame,new CancellationFragment()).commit();
 
         } else if (id == R.id.nav_slideshow) {
-            startActivity(new Intent(MainActivity.this,CameraCollectionActivity.class));
+
 
         } else if (id == R.id.nav_tools) {
 

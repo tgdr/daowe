@@ -1,7 +1,6 @@
 package edu.buu.daowe.activity;
 
 import android.app.Activity;
-import android.app.DownloadManager;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -30,27 +29,27 @@ public class CameraCollectionActivity extends Activity {
     Button btn;
     ImageView img;
     private static  int reqcode= 0x001;
+    Bundle getbunle;
     String nowtime  = new SimpleDateFormat("yy-MM-dd HH:mm:ss").format(new Date());
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
-        dirisExist(Environment.getExternalStorageDirectory()+"/daowe_collection");
-
-
-        mfilepath = Environment.getExternalStorageDirectory()+"/daowe_collection/"+nowtime +".png";
+        Intent receiveit =getIntent();
+        getbunle =  receiveit.getBundleExtra("info");   //接受由CheckInFragment传递过来的bundle对象
+        dirisExist(Environment.getExternalStorageDirectory()+"/daowe_collection");   //保存照片文件的路径为 sd卡/daowe_collection文件夹 如果没有就创建
+        mfilepath = Environment.getExternalStorageDirectory()+"/daowe_collection/"+nowtime +".png"; //以当前打开activity的时间为基点 命名文件的名字
         btn = findViewById(R.id.btn_collection);
         img = findViewById(R.id.mycameraview);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //调用系统Image_Capture行为
                 Intent it = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                //android 7.0以后不能直接用file:///的形式访问文件目录 要先申请读取存取权限 之后利用FileProvide进行 sd卡的文件操作
                 Uri photouri = FileProvider.getUriForFile(CameraCollectionActivity.this,"edu.buu.daowe.fileauthorities",new File(mfilepath));
-                it.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);//授予临时权限别忘了
-              //  it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-               // it.setDataAndType(photouri, "image/*");
-
-                it.putExtra(MediaStore.EXTRA_OUTPUT,photouri);
+                it.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                it.putExtra(MediaStore.EXTRA_OUTPUT,photouri); //用来获取系统拍照返回的文件
                 startActivityForResult(it,reqcode);
             }
         });
@@ -63,11 +62,12 @@ public class CameraCollectionActivity extends Activity {
         if(resultCode == RESULT_OK){
             if(requestCode == reqcode){
                 try {
+                    //系统拍摄的照片文件保存到sd卡设置的目录中  利用bitmap读取并显示到imgview上
                     fis = new FileInputStream(mfilepath);
                     Bitmap mimg = BitmapFactory.decodeStream(fis);
                     img.setImageBitmap(mimg);
                     AlertDialog.Builder builder = new AlertDialog.Builder(CameraCollectionActivity.this )
-                                         .setMessage("签到时间为"+nowtime+"\n").setTitle("签到成功");
+                                         .setMessage("签到时间为"+nowtime+"\n"+"教室id为："+getbunle.getString("classid")).setTitle("签到成功");
                                  builder.show();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();

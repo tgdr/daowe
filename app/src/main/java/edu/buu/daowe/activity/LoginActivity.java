@@ -67,8 +67,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //从application中获取信息（侧滑菜单上的用户名 因为在登陆时存放了全局变量 所以利用app进行读取）
         app= (DaoWeApplication) getApplication();
         spf = app.getSpf();
+        //申请动态权限的列表
          String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE
                  ,Manifest.permission.READ_EXTERNAL_STORAGE
                  ,Manifest.permission.INTERNET
@@ -89,6 +91,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 // 如果没有授予该权限，就去提示用户请求
         requestPermissions(permissions,321);
+        //如果用户点击了自动登陆首先获取spf文件中存储的用户名和密码 如果有就提取他们直接向服务器发送登陆请求
         if(!spf.getString("username","").equals("")&&!spf.getString("password","").equals("")&&spf.getString("AUTOLOGIN","").equals("true")){
                 OkHttpUtils.post().url("http://www.ltyearth.cn").build().execute(new StringCallback() {
                     @Override
@@ -107,6 +110,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 });
 
         }
+        //如果没有自动登陆 就显示登陆界面并初始化控件
         else{
             setContentView(R.layout.activity_main_login);
 

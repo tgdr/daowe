@@ -71,33 +71,37 @@ public class CheckInFragment extends Fragment {
             public void onServiceConnected(ComponentName name, IBinder myb) {
 
 
-                    //   Log.e("ffffffffffffffff","ffffffffffffffffff");
+
                 mybinder = (ScanBeaconService.MyBinder) myb;
 
                   mys = mybinder.getService();
                   if(mys.getErrorCode() == 1){
+                      //打开应用后没有扫描到对应的ibeacon设备名字的时候显示
                       Toast.makeText(getActivity(),"不在教室范围之内",Toast.LENGTH_SHORT).show();
                   }
                  mys.setReceivedata(new Receivedata() {
                      @Override
                      public void update(final ScanResult scanResult) {
-                     //    Log.e("innerinnerinner","iupupupupupupupupupu");
+                     //扫描到设备后回调监听数据 更新ui
                          if (scanResult!=null){
                          final double distance = RssiUtil.getDistance(scanResult.getRssi());
                          final String address =  scanResult.getDevice().getAddress();
                          mText.setText("rssi:"+scanResult.getRssi()+"\n"+"二者间的距离为"+distance);
+                         //如果手机与扫描到到ibeacon的大致距离大于20米 签到选项不可见
                          if(distance<=20){
                             btn_checkin.setVisibility(View.VISIBLE);
                          }
                          else{
                              btn_checkin.setVisibility(View.INVISIBLE);
                          }
+                         //设置签到的监听事件  启动采集人脸的activity 并把教室信息以及用户对于ibeacon的距离传递给签到界面
                          btn_checkin.setOnClickListener(new View.OnClickListener() {
                              @Override
                              public void onClick(View v) {
                                  Intent myit = new Intent(getActivity(), CameraCollectionActivity.class);
                                  Bundle mbundle = new Bundle();
                                  mbundle.putDouble("distance",distance);
+                                 mbundle.putString("classid",address);
                                  myit.putExtra("info",mbundle);
                                  startActivity(myit);
 
