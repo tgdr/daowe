@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="edu.buu.daowe">
+
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <application
+        android:name=".DaoWeApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <activity
+            android:name=".activity.LoginActivity"
+            android:configChanges="keyboardHidden|orientation"
+
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@style/Account_Base.App.Theme.NoTitle"
+            android:windowSoftInputMode="stateHidden|adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service android:name=".services.ScanBeaconService">
+            <intent-filter>
+                <action android:name="com.hungrytree.receiver.BleService"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </service>
+
+        <activity
+            android:name=".activity.MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
+
+        </activity>
+        <activity
+            android:name=".activity.RegisterActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:label="注册"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@style/Account_Base.App.Theme.NoTitle"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".activity.ForgetPwdActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:label="密码找回"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@style/Account_Base.App.Theme.NoTitle"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+    </application>
+
+</manifest>
