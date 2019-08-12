@@ -10,9 +10,15 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,6 +28,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import edu.buu.daowe.R;
+import edu.buu.daowe.Util.Base64Util;
+import edu.buu.daowe.Util.FileUtil;
+import okhttp3.Call;
+import okhttp3.MediaType;
 
 public class CameraCollectionActivity extends Activity {
 
@@ -59,6 +69,8 @@ public class CameraCollectionActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         FileInputStream fis=null;
+        OkHttpUtils okHttpUtils;
+        byte[] picturedata;
         if(resultCode == RESULT_OK){
             if(requestCode == reqcode){
                 try {
@@ -66,13 +78,51 @@ public class CameraCollectionActivity extends Activity {
                     fis = new FileInputStream(mfilepath);
                     Bitmap mimg = BitmapFactory.decodeStream(fis);
                     img.setImageBitmap(mimg);
+
+                    Thread.sleep(1000);
+                    picturedata = FileUtil.readFileByBytes(mfilepath);
+                    String picturestr = Base64Util.encode(picturedata);
+                    JSONObject object = new JSONObject();
+                    object.put("image", picturestr);
+                    object.put("image_type", "BASE64");
+                    object.put("face_field", "age,beauty,expression,face_shape,gender,glasses,landmark,race,quality,face_type");
+                    JSONArray array = new JSONArray();
+                    array.add(object);
+
+                    Log.e("errorerror", array.toJSONString());
+
+
+                    OkHttpUtils.postString().content(array.toJSONString()).mediaType(MediaType.parse("application/json; charset=utf-8")).url("https://aip.baidubce.com/rest/2.0/face/v3/faceverify?access_token=24.9ae1cb33b4c067007bd3bd8af8dfc7ea.2592000.1566961188.282335-16902024").build().execute(new StringCallback() {
+                        @Override
+                        public void onError(Call call, Exception e, int id) {
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(CameraCollectionActivity.this);
+                            builder.setTitle("getinfo");
+                            builder.setMessage(call.toString() + "");
+                            builder.show();
+                        }
+
+                        @Override
+                        public void onResponse(String response, int id) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(CameraCollectionActivity.this);
+                            builder.setTitle("getinfo");
+                            builder.setMessage(response + "");
+                            builder.show();
+                        }
+                    });
+
+
+
                     AlertDialog.Builder builder = new AlertDialog.Builder(CameraCollectionActivity.this )
                                          .setMessage("签到时间为"+nowtime+"\n"+"教室id为："+getbunle.getString("classid")).setTitle("签到成功");
                                  builder.show();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
-                }
-                finally {
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } finally {
                     try {
                         fis.close();
                     } catch (IOException e) {
@@ -93,4 +143,5 @@ public class CameraCollectionActivity extends Activity {
         }
 
 }
+
 }

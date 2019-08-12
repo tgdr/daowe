@@ -1,27 +1,32 @@
 package edu.buu.daowe.activity;
 
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
+import android.widget.TextView;
 
 import edu.buu.daowe.R;
+import edu.buu.daowe.fragment.Register_one_Fragment;
 
-public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
+public class RegisterActivity extends AppCompatActivity {
+    FragmentManager manager;
+    FragmentTransaction transaction;
+    boolean smssuccess = false;
+    TextView tvsmscall;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_register_step_one);
+        setContentView(R.layout.fragment_register);
+        manager = getSupportFragmentManager();
+        transaction = manager.beginTransaction();
+        transaction.replace(R.id.reg_frame, new Register_one_Fragment());
+        transaction.commit();
 
-        findViewById(R.id.ib_navigation_back).setOnClickListener(this);
+
     }
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.ib_navigation_back:
-                finish();
-                break;
-        }
-    }
+
 }
