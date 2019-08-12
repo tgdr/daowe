@@ -9,37 +9,30 @@ import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import edu.buu.daowe.R;
 import edu.buu.daowe.http.BaseRequest;
-import edu.buu.daowe.thread.VCodeSendCounter;
 import okhttp3.Call;
 
 public class Register_one_Fragment extends Fragment implements TextWatcher {
-    boolean smssuccess = false;
-    CheckBox cb;
-    boolean srhf = false;
-    EditText editsms, editphone;
-    TextView tvsmscall;
-    ImageButton img_btn;
+    EditText etstuid, etstuname;
     Button mBtRegSubmit;
+
     FragmentManager manager;
-
     FragmentTransaction transaction;
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,7 +41,7 @@ public class Register_one_Fragment extends Fragment implements TextWatcher {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.activity_main_register_step_one, null);
+        return inflater.inflate(R.layout.activity_main_register_step_two, null);
     }
 
     @Override
@@ -56,74 +49,113 @@ public class Register_one_Fragment extends Fragment implements TextWatcher {
         super.onViewCreated(view, savedInstanceState);
         manager = getFragmentManager();
         transaction = manager.beginTransaction();
+
+
+        etstuid = view.findViewById(R.id.et_register_username);
+        etstuname = view.findViewById(R.id.et_register_stuname);
+        etstuname.addTextChangedListener(this);
         mBtRegSubmit = view.findViewById(R.id.bt_register_submit);
-        cb = view.findViewById(R.id.cb_protocol);
-        tvsmscall = view.findViewById(R.id.tv_register_sms_call);
-        editphone = view.findViewById(R.id.et_register_phonenum);
-        editsms = view.findViewById(R.id.et_register_auth_code);
-        editphone.addTextChangedListener(this);
-        editsms.addTextChangedListener(this);
-        img_btn = view.findViewById(R.id.ib_navigation_back);
-        img_btn.setOnClickListener(new View.OnClickListener() {
+        etstuid.addTextChangedListener(this);
+
+
+        /**
+         * 网络请求部分
+         */
+
+        mBtRegSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getActivity().finish();
-            }
-        });
-        tvsmscall.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View l_view) {
-                VCodeSendCounter vCodeSendCounter = new VCodeSendCounter(tvsmscall, 60000, 1000);
-                vCodeSendCounter.start();
-                OkHttpUtils.get().url(BaseRequest.BASEURL + "sms/" + editphone.getText().toString()).build().execute(new StringCallback() {
+
+                OkHttpUtils.get().url(BaseRequest.BASEURL + "users/" + etstuid.getText().toString()).build().execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
-                        smssuccess = false;
-                        Toast.makeText(getActivity(), "发送失败请您检查网络状态", Toast.LENGTH_SHORT).show();
 
                     }
 
                     @Override
                     public void onResponse(String response, int id) {
-                        smssuccess = true;
-                        Toast.makeText(getActivity(), "验证码发送成功请查收", Toast.LENGTH_SHORT).show();
+                        Bundle data = new Bundle();
+
+                        Log.e("data", response);
+                        try {
+                            JSONObject object = new JSONObject(response);
+                            if (object.getInt("code") == 200) {
+                                if (object.getString("data").equals(etstuname.getText().toString().trim())) {
+                                    data.putString("stuid", etstuid.getText().toString());
+                                    Register_two_Fragment two = new Register_two_Fragment();
+                                    two.setArguments(data);
+                                    transaction.replace(R.id.reg_frame, two);
+                                    transaction.commit();
+                                } else {
+                                    Toast.makeText(getActivity(), "学号与姓名不匹配请检查！", Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                Toast.makeText(getActivity(), "验证失败未定义的学号！", Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
-
-
             }
         });
+
+
+
+        /*
         mBtRegSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (smssuccess == true) {
-                    // Toast.makeText(getActivity(),"手机验证通过请输入您的详细信息",Toast.LENGTH_SHORT).show();
-                    Bundle data = new Bundle();
-                    data.putString("vrcode", editsms.getText().toString());
-                    data.putString("phone", editphone.getText().toString());
-                    Register_two_Fragment two = new Register_two_Fragment();
-                    two.setArguments(data);
-                    transaction.replace(R.id.reg_frame, two);
-                    transaction.commit();
-                } else {
-                    Toast.makeText(getActivity(), "您还没有通过验证码认证，请验证后重试", Toast.LENGTH_SHORT).show();
-                }
+                JSONObject dataob = new JSONObject();
+                dataob.put("phoneNumber", data.getString("phone"));
+                dataob.put("smsCode", data.getString("vrcode"));
+                dataob.put("passwordHash", PassWordUtil.encode(etpass.getText().toString()));
+                //    Log.e("decode", PassWordUtil.decode(PassWordUtil.encode(etpass.getText().toString())));
+                dataob.put("id", etstuid.getText().toString());
+                OkHttpUtils.postString().content(dataob.toJSONString()).mediaType(MediaType.parse("application/json; charset=utf-8"))
+                        .url(BaseRequest.BASEURL + "register").build().execute(new StringCallback() {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setTitle("注册失败！");
+                        builder.setMessage("注册失败！发生错误！");
+                        builder.setPositiveButton("好的我再试一次一下", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        });
+                        builder.setNegativeButton("算了直接登录吧！", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                getActivity().finish();
+                            }
+                        });
+                        builder.show();
+                    }
+
+                    @Override
+                    public void onResponse(String response, int id) {
+                        Log.e("responseresponse", response);
+                        try {
+                            org.json.JSONObject res = new org.json.JSONObject(response);
+                            if (res.getInt("code") == 404) {
+                                Toast.makeText(getActivity(), "用户已经存在！请登录", Toast.LENGTH_SHORT).show();
+                                getActivity().finish();
+                            } else if (res.getInt("code") == 200) {
+                                Toast.makeText(getActivity(), "绑定手机号成功！" + id, Toast.LENGTH_SHORT).show();
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                });
             }
         });
-        cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b == true && srhf == true) {
-                    mBtRegSubmit.setBackgroundResource(R.drawable.bg_login_submit);
-                    mBtRegSubmit.setTextColor(getResources().getColor(R.color.white));
-                    mBtRegSubmit.setClickable(true);
-                } else {
-                    mBtRegSubmit.setBackgroundResource(R.drawable.bg_login_submit_lock);
-                    mBtRegSubmit.setTextColor(getResources().getColor(R.color.account_lock_font_color));
-                    mBtRegSubmit.setClickable(false);
-                }
-            }
-        });
+*/
+
     }
 
     @Override
@@ -138,19 +170,15 @@ public class Register_one_Fragment extends Fragment implements TextWatcher {
 
     @Override
     public void afterTextChanged(Editable editable) {
-        String smsstatus = editsms.getText().toString().trim();
-        String phonenu = editphone.getText().toString().trim();
-
-
-        //登录按钮是否可用
-        if (!TextUtils.isEmpty(phonenu) && !TextUtils.isEmpty(smsstatus)) {
-            srhf = true;
-
+//登录按钮是否可用
+        if (!TextUtils.isEmpty(etstuname.getText().toString()) && !TextUtils.isEmpty(etstuid.getText().toString())) {
+            mBtRegSubmit.setBackgroundResource(R.drawable.bg_login_submit);
+            mBtRegSubmit.setTextColor(getResources().getColor(R.color.white));
+            mBtRegSubmit.setClickable(true);
         } else {
             mBtRegSubmit.setBackgroundResource(R.drawable.bg_login_submit_lock);
             mBtRegSubmit.setTextColor(getResources().getColor(R.color.account_lock_font_color));
             mBtRegSubmit.setClickable(false);
-            srhf = false;
         }
     }
 }

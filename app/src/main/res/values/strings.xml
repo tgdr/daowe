@@ -23,6 +23,7 @@
     <string name="login_other_hint">其他方式登录</string>
     <string name="register_input_username_hint">手机号</string>
     <string name="register_input_sid_hint">学号/工号</string>
+    <string name="register_input_sname_hint">姓名</string>
     <string name="register_username_hint">用户名</string>
     <string name="register_sms_auth_code">短信验证码</string>
     <string name="register_sms_hint">获取验证码</string>
