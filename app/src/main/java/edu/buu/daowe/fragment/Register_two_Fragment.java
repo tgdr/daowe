@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,8 @@ import android.widget.Toast;
 
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
+import com.zhy.http.okhttp.cookie.CookieJarImpl;
+import com.zhy.http.okhttp.cookie.store.PersistentCookieStore;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,13 +35,14 @@ import edu.buu.daowe.http.BaseRequest;
 import edu.buu.daowe.thread.VCodeSendCounter;
 import okhttp3.Call;
 import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
 
 public class Register_two_Fragment extends Fragment implements TextWatcher {
 
 
     Bundle data;
-
-
+    OkHttpClient okHttpClient;
+    CookieJarImpl cookieJar;
     boolean smssuccess = false;
     CheckBox cb;
     boolean srhf = false;
@@ -78,12 +82,17 @@ public class Register_two_Fragment extends Fragment implements TextWatcher {
                 getActivity().finish();
             }
         });
+        cookieJar = new CookieJarImpl(new PersistentCookieStore(getActivity()));
+//        ClearableCookieJar cookieJar =
+//                new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(getActivity()));
+        okHttpClient = new OkHttpClient.Builder().cookieJar(cookieJar).build();
         tvsmscall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View l_view) {
                 VCodeSendCounter vCodeSendCounter = new VCodeSendCounter(tvsmscall, 60000, 1000);
                 vCodeSendCounter.start();
-                OkHttpUtils.get().url(BaseRequest.BASEURL + "sms/" + editphone.getText().toString()).build().execute(new StringCallback() {
+
+                OkHttpUtils.initClient(okHttpClient).get().url(BaseRequest.BASEURL + "sms/" + editphone.getText().toString()).build().execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
                         smssuccess = false;
@@ -117,7 +126,9 @@ public class Register_two_Fragment extends Fragment implements TextWatcher {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    OkHttpUtils.postString().content(dataob.toString()).mediaType(MediaType.parse("application/json; charset=utf-8"))
+
+
+                    OkHttpUtils.getInstance().postString().content(dataob.toString()).mediaType(MediaType.parse("application/json; charset=utf-8"))
                             .url(BaseRequest.BASEURL + "register").build().execute(new StringCallback() {
                         @Override
                         public void onError(Call call, Exception e, int id) {
@@ -141,7 +152,7 @@ public class Register_two_Fragment extends Fragment implements TextWatcher {
 
                         @Override
                         public void onResponse(String response, int id) {
-                            //  Log.e("responseresponse", response);
+                            Log.e("responseresponse", response);
                             try {
                                 org.json.JSONObject res = new org.json.JSONObject(response);
                                 if (res.getInt("code") == 404) {
