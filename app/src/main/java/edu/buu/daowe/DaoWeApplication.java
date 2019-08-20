@@ -6,6 +6,8 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 
 import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.cookie.CookieJarImpl;
+import com.zhy.http.okhttp.cookie.store.PersistentCookieStore;
 
 import java.util.concurrent.TimeUnit;
 
@@ -37,6 +39,7 @@ public class DaoWeApplication extends Application {
 
     SharedPreferences spf;
     SharedPreferences.Editor editor;
+
     public static long getLasttime() {
         return lasttime;
     }
@@ -54,7 +57,26 @@ public class DaoWeApplication extends Application {
         this.username = username;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    private String token;
     private String username;
+
+    public String getStuid() {
+        return stuid;
+    }
+
+    public void setStuid(String stuid) {
+        this.stuid = stuid;
+    }
+
+    private String stuid;
    private OkHttpClient okHttpClient;
     private static HandlerListener mListener;
     //对于okhttpclient使用单例模式
@@ -70,7 +92,8 @@ public class DaoWeApplication extends Application {
         super.onCreate();
         spf  = PreferenceManager.getDefaultSharedPreferences(this);
         editor = spf.edit();
-        okHttpClient = new OkHttpClient.Builder()
+        CookieJarImpl cookieJar = new CookieJarImpl(new PersistentCookieStore(getApplicationContext()));
+        okHttpClient = new OkHttpClient.Builder().cookieJar(cookieJar)
 //                .addInterceptor(new LoggerInterceptor("TAG"))
                 .connectTimeout(10000L, TimeUnit.MILLISECONDS)
                 .readTimeout(10000L, TimeUnit.MILLISECONDS)

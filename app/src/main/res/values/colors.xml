@@ -32,7 +32,10 @@
     <color name="account_lock_font_color">#FF68997C</color>
     <color name="account_input_color">#c9c9c9</color>
     <color name="account_pressed_true">#14b94d</color>
-
+    <color name="black_2c">#2c2c2c</color>
+    <color name="write">#ffffff</color>
+    <color name="theme">#03A9F4</color>
     <color name="bg_press">#ebebeb</color>
     <color name="bg_press_material">#d4d4d4</color>
+    <color name="bottom_navigation_normal">#ff60917a</color>
 </resources>

@@ -19,7 +19,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.Build;
-import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
@@ -232,7 +231,8 @@ public class ScanBeaconService extends Service {
 //                    Utils.writeFile(getApplicationContext(),"wakeup.log",Integer.toString(numRSSI));
                     Log.i("Wakeup", "onScanResult2: name: " + result.getDevice().getName() +
                             ", address: " + result.getDevice().getAddress() +
-                            ", rssi: " + result.getRssi() + ", scanRecord: " + result.getScanRecord());
+                            ", rssi: " + result.getRssi() + ", scanRecord: " +
+                            result.getScanRecord().getManufacturerSpecificData().keyAt(0) + "        ");
                     receivedata.update(result);
                 }
             }
@@ -318,6 +318,7 @@ public class ScanBeaconService extends Service {
         ScanFilter.Builder builder2 = new ScanFilter.Builder();
 
         builder2.setDeviceName("shellming");//你要扫描的设备的名称，如果使用lightble这个app来模拟蓝牙可以直接设置name
+
         ScanFilter scanFilter2 = builder2.build();
 
 //        scanFilterList.add(scanFilter);
@@ -330,6 +331,7 @@ public class ScanBeaconService extends Service {
         settingBuilder.setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES);
         settingBuilder.setLegacy(true);
 
+        // scanFilterList.get(scanFilterList.size());
         ScanSettings settings = settingBuilder.build();
 
 

@@ -6,4 +6,5 @@ package edu.buu.daowe.http;
  */
 public class BaseRequest {
     public static final String BASEURL = "https://api.doways.cn/v1/";
+    public final static String BASEBOS = "https://doways-avatar.cdn.bcebos.com/";
 }

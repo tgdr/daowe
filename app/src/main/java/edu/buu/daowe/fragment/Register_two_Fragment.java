@@ -23,26 +23,22 @@ import android.widget.Toast;
 
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
-import com.zhy.http.okhttp.cookie.CookieJarImpl;
-import com.zhy.http.okhttp.cookie.store.PersistentCookieStore;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import edu.buu.daowe.DaoWeApplication;
 import edu.buu.daowe.R;
-import edu.buu.daowe.Util.PassWordUtil;
 import edu.buu.daowe.http.BaseRequest;
 import edu.buu.daowe.thread.VCodeSendCounter;
 import okhttp3.Call;
 import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
 
 public class Register_two_Fragment extends Fragment implements TextWatcher {
 
-
+    DaoWeApplication app;
     Bundle data;
-    OkHttpClient okHttpClient;
-    CookieJarImpl cookieJar;
+
     boolean smssuccess = false;
     CheckBox cb;
     boolean srhf = false;
@@ -54,6 +50,7 @@ public class Register_two_Fragment extends Fragment implements TextWatcher {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        app = (DaoWeApplication) getActivity().getApplication();
     }
 
     @Nullable
@@ -82,20 +79,21 @@ public class Register_two_Fragment extends Fragment implements TextWatcher {
                 getActivity().finish();
             }
         });
-        cookieJar = new CookieJarImpl(new PersistentCookieStore(getActivity()));
+
 //        ClearableCookieJar cookieJar =
 //                new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(getActivity()));
-        okHttpClient = new OkHttpClient.Builder().cookieJar(cookieJar).build();
+
         tvsmscall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View l_view) {
                 VCodeSendCounter vCodeSendCounter = new VCodeSendCounter(tvsmscall, 60000, 1000);
                 vCodeSendCounter.start();
 
-                OkHttpUtils.initClient(okHttpClient).get().url(BaseRequest.BASEURL + "sms/" + editphone.getText().toString()).build().execute(new StringCallback() {
+                OkHttpUtils.get().url(BaseRequest.BASEURL + "sms/" + editphone.getText().toString()).build().execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
                         smssuccess = false;
+                        Log.e("Exception", e.toString());
                         Toast.makeText(getActivity(), "发送失败请您检查网络状态", Toast.LENGTH_SHORT).show();
 
                     }
@@ -120,7 +118,7 @@ public class Register_two_Fragment extends Fragment implements TextWatcher {
                         dataob = new JSONObject();
                         dataob.put("phoneNumber", editphone.getText().toString());
                         dataob.put("smsCode", editsms.getText().toString());
-                        dataob.put("passwordHash", PassWordUtil.encode(PassWordUtil.encode(etpass.getText().toString())));
+                        dataob.put("passwordHash", etpass.getText().toString());
                         //    Log.e("decode", PassWordUtil.decode(PassWordUtil.encode(etpass.getText().toString())));
                         dataob.put("id", data.getString("stuid"));
                     } catch (JSONException e) {
@@ -128,8 +126,8 @@ public class Register_two_Fragment extends Fragment implements TextWatcher {
                     }
 
 
-                    OkHttpUtils.getInstance().postString().content(dataob.toString()).mediaType(MediaType.parse("application/json; charset=utf-8"))
-                            .url(BaseRequest.BASEURL + "register").build().execute(new StringCallback() {
+                    OkHttpUtils.postString().content(dataob.toString()).mediaType(MediaType.parse("application/json; charset=utf-8"))
+                            .url(BaseRequest.BASEURL + "auth/register/").build().execute(new StringCallback() {
                         @Override
                         public void onError(Call call, Exception e, int id) {
                             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -152,12 +150,17 @@ public class Register_two_Fragment extends Fragment implements TextWatcher {
 
                         @Override
                         public void onResponse(String response, int id) {
-                            Log.e("responseresponse", response);
+                            //Log.e("responseresponse", response);
                             try {
                                 org.json.JSONObject res = new org.json.JSONObject(response);
                                 if (res.getInt("code") == 404) {
-                                    Toast.makeText(getActivity(), "用户已经存在！请登录", Toast.LENGTH_SHORT).show();
-                                    getActivity().finish();
+                                    if (res.getString("msg").equals("无效的验证码")) {
+                                        Toast.makeText(getActivity(), "验证码输入错误！", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(getActivity(), "用户已经存在！请登录", Toast.LENGTH_SHORT).show();
+                                        getActivity().finish();
+                                    }
+
                                 } else if (res.getInt("code") == 200) {
                                     Toast.makeText(getActivity(), "用户注册成功！", Toast.LENGTH_SHORT).show();
                                     getActivity().finish();

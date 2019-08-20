@@ -66,7 +66,8 @@ public class Register_one_Fragment extends Fragment implements TextWatcher {
             @Override
             public void onClick(View view) {
 
-                OkHttpUtils.get().url(BaseRequest.BASEURL + "users/" + etstuid.getText().toString()).build().execute(new StringCallback() {
+                OkHttpUtils.get().url(BaseRequest.BASEURL + "auth/" + etstuid.getText().toString()
+                        + "/").build().execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
 

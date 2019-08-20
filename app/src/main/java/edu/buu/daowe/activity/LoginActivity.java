@@ -30,9 +30,14 @@ import android.widget.Toast;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import edu.buu.daowe.DaoWeApplication;
 import edu.buu.daowe.R;
+import edu.buu.daowe.http.BaseRequest;
 import okhttp3.Call;
+import okhttp3.MediaType;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, View.OnFocusChangeListener, ViewTreeObserver.OnGlobalLayoutListener, TextWatcher {
 
@@ -93,21 +98,49 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         requestPermissions(permissions,321);
         //如果用户点击了自动登陆首先获取spf文件中存储的用户名和密码 如果有就提取他们直接向服务器发送登陆请求
         if(!spf.getString("username","").equals("")&&!spf.getString("password","").equals("")&&spf.getString("AUTOLOGIN","").equals("true")){
-                OkHttpUtils.post().url("http://www.ltyearth.cn").build().execute(new StringCallback() {
-                    @Override
-                    public void onError(Call call, Exception e, int id) {
-                        setContentView(R.layout.activity_main_login);
-                        initView();
-                        Toast.makeText(LoginActivity.this,"网络错误请检查您的网络连接状态",Toast.LENGTH_LONG).show();
-                        mEtLoginUsername.setText(spf.getString("username",""));
-                        mEtLoginPwd.setText(spf.getString("password",""));
 
-                    }
-                    @Override
-                    public void onResponse(String response, int id) {
+            JSONObject dataob = null;
+            try {
+                dataob = new JSONObject();
+                dataob.put("password", spf.getString("password", ""));
+                dataob.put("username", spf.getString("username", ""));
 
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+            OkHttpUtils.postString().content(dataob.toString()).mediaType(MediaType.parse("application/json; charset=utf-8"))
+                    .url(BaseRequest.BASEURL + "auth").build().execute(new StringCallback() {
+                @Override
+                public void onError(Call call, Exception e, int id) {
+
+                }
+
+                @Override
+                public void onResponse(String response, int id) {
+                    try {
+                        JSONObject rep = new JSONObject(response);
+                        if (rep.getInt("code") == 200) {
+                            Toast.makeText(LoginActivity.this, "欢迎回来！", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                            app.setUsername(spf.getString("username", "NULL"));
+                            app.setToken(rep.getString("data"));
+                            overridePendingTransition(R.anim.fade_out, R.anim.fade_in);
+                            finish();
+                        } else {
+                            Toast.makeText(LoginActivity.this, "登陆失败", Toast.LENGTH_SHORT).show();
+
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                });
+                }
+            });
+
+
+
 
         }
         //如果没有自动登陆 就显示登陆界面并初始化控件
@@ -446,18 +479,64 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     //登录
     private void loginRequest() {
 
-        if(cbauto.isChecked()==true){
-            app.getEditor().putString("AUTOLOGIN","true").putString("username",mEtLoginUsername.getText().toString()).putString("password",mEtLoginPwd.getText().toString()).commit();
 
-        }
-        else{
-            app.getEditor().putString("AUTOLOGIN","true").commit();
+        //app.setUsername(mEtLoginUsername.getText().toString());
+
+
+        JSONObject dataob = null;
+        try {
+            dataob = new JSONObject();
+            dataob.put("password", mEtLoginPwd.getText().toString());
+            dataob.put("username", mEtLoginUsername.getText().toString());
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
-            app.setUsername(mEtLoginUsername.getText().toString());
-            startActivity(new Intent(LoginActivity.this,MainActivity.class));
-            overridePendingTransition(R.anim.fade_out,R.anim.fade_in);
-            finish();
+        OkHttpUtils.postString().content(dataob.toString()).mediaType(MediaType.parse("application/json; charset=utf-8"))
+                .url(BaseRequest.BASEURL + "auth").build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                // Log.e("whatwhatwhat",e.toString());
+            }
+
+            @Override
+            public void onResponse(String response, int id) {
+                if (cbauto.isChecked() == true) {
+                    app.getEditor().putString("AUTOLOGIN", "true").putString("username", mEtLoginUsername.getText().toString()).putString("password", mEtLoginPwd.getText().toString()).commit();
+
+                } else {
+                    app.getEditor().putString("AUTOLOGIN", "true").commit();
+                }
+                try {
+                    JSONObject rep = new JSONObject(response);
+                    if (rep.getInt("code") == 200) {
+                        Toast.makeText(LoginActivity.this, "欢迎回来！", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        app.setUsername(mEtLoginUsername.getText().toString());
+                        app.setToken(rep.getString("data"));
+                        overridePendingTransition(R.anim.fade_out, R.anim.fade_in);
+                        finish();
+                    } else {
+                        Toast.makeText(LoginActivity.this, "登陆失败", Toast.LENGTH_SHORT).show();
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
+
+
+
+
+
+
+
+
     }
 
     //微博登录
