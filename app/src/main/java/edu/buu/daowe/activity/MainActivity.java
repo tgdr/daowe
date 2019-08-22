@@ -49,7 +49,11 @@ import edu.buu.daowe.Util.BosUtils;
 import edu.buu.daowe.Util.BottomNavigationViewHelper;
 import edu.buu.daowe.dialogue.ModifyPhotoBottomDialog;
 import edu.buu.daowe.fragment.CancellationFragment;
+import edu.buu.daowe.fragment.CardShowClassFragment;
 import edu.buu.daowe.fragment.CheckInFragment;
+import edu.buu.daowe.fragment.Four_Fragment;
+import edu.buu.daowe.fragment.Three_Fragment;
+import edu.buu.daowe.fragment.Two_Fragment;
 import edu.buu.daowe.http.BaseRequest;
 import okhttp3.Call;
 import okhttp3.MediaType;
@@ -78,7 +82,7 @@ public class MainActivity extends AppCompatActivity
         app = (DaoWeApplication) getApplication();
         fragmanager = getSupportFragmentManager();
         transaction = fragmanager.beginTransaction();
-        transaction.replace(R.id.main_frame,new CheckInFragment()).commit();
+        //   transaction.replace(R.id.main_frame,new CheckInFragment()).commit();
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -166,12 +170,16 @@ public class MainActivity extends AppCompatActivity
     private void initData() {
         //setSupportActionBar(mToolbar);
         mFragments = new ArrayList<>();
-        //  mFragments.add(new MessageFragment());
-        //  mFragments.add(new ContactsFragment());
-        // mFragments.add(new DiscoverFragment());
+        mFragments.add(new CardShowClassFragment());
+        mFragments.add(new Two_Fragment());
+        mFragments.add(new Three_Fragment());
+        mFragments.add(new Four_Fragment());
+
+        mFragments.add(new CheckInFragment());
+        mFragments.add(new CancellationFragment());
         // mFragments.add(new AccountFragment());
         // 初始化展示MessageFragment
-        //  setFragmentPosition(0);
+        setFragmentPosition(0);
     }
 
     private void initBottomNavigation() {
@@ -257,14 +265,15 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_checkin) {
             // Handle the camera action
-            transaction = fragmanager.beginTransaction();
-        transaction.replace(R.id.main_frame,new CheckInFragment()).commit();
+//            transaction = fragmanager.beginTransaction();
+//        transaction.replace(R.id.main_frame,new CheckInFragment()).commit();
 
-
+            setFragmentPosition(4);
 
         } else if (id == R.id.nav_cancellation) {
-            transaction = fragmanager.beginTransaction();
-            transaction.replace(R.id.main_frame,new CancellationFragment()).commit();
+//            transaction = fragmanager.beginTransaction();
+//            transaction.replace(R.id.main_frame,new CancellationFragment()).commit();
+            setFragmentPosition(5);
 
         } else if (id == R.id.nav_slideshow) {
             Intent picture = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);

@@ -115,7 +115,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     .url(BaseRequest.BASEURL + "auth").build().execute(new StringCallback() {
                 @Override
                 public void onError(Call call, Exception e, int id) {
+                    setContentView(R.layout.activity_main_login);
 
+                    initView();
+                    cbauto.setChecked(true);
+                    Toast.makeText(LoginActivity.this, "请检查网络！", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override

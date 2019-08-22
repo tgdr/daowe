@@ -13,7 +13,17 @@ public class BottomNavigationViewHelper {
 
     @SuppressLint("RestrictedApi")
     public static void disableShiftMode(BottomNavigationView view) {
-        BottomNavigationMenuView menuView = (BottomNavigationMenuView) view.getChildAt(0);
+        BottomNavigationMenuView menuView;
+        int count = view.getChildCount();
+        if (count > 0) {
+            menuView = (BottomNavigationMenuView) view.getChildAt(0);
+            if (menuView != null) {
+                menuView.setLabelVisibilityMode(1);
+                menuView.updateMenuView();
+            }
+        }
+
+        menuView = (BottomNavigationMenuView) view.getChildAt(0);
         try {
             Field shiftingMode = menuView.getClass().getDeclaredField("mShiftingMode");
             shiftingMode.setAccessible(true);
@@ -23,6 +33,7 @@ public class BottomNavigationViewHelper {
                 BottomNavigationItemView item = (BottomNavigationItemView) menuView.getChildAt(i);
                 //noinspection RestrictedApi
                 item.setShifting(false);
+
                 //  item.setShiftingMode(false);
                 // set once again checked value, so view will be updated
                 //noinspection RestrictedApi

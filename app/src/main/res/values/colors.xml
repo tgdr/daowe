@@ -38,4 +38,17 @@
     <color name="bg_press">#ebebeb</color>
     <color name="bg_press_material">#d4d4d4</color>
     <color name="bottom_navigation_normal">#ff60917a</color>
+
+
+    <color name="color_0">#FFF0F5</color>
+    <color name="color_1">#FFE1FF</color>
+    <color name="color_2">#E6E6FA</color>
+    <color name="color_3">#C1FFC1</color>
+    <color name="color_4">#B22222</color>
+    <color name="color_5">#836FFF</color>
+    <color name="color_6">#68228B</color>
+    <color name="color_7">#5CACEE</color>
+    <color name="color_8">#43CD80</color>
+    <color name="color_9">#00EE00</color>
+    <color name="color_10">#708090</color>
 </resources>
