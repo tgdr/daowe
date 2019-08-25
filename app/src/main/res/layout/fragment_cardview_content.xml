@@ -30,7 +30,7 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <edu.buu.daowe.Util.SelectableRoundedImageView
+                <edu.buu.daowe.defui.SelectableRoundedImageView
                     android:layout_width="wrap_content"
                     android:id="@+id/img_card_status"
                     android:layout_height="wrap_content"

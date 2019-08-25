@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
@@ -53,7 +52,6 @@ import edu.buu.daowe.fragment.CardShowClassFragment;
 import edu.buu.daowe.fragment.CheckInFragment;
 import edu.buu.daowe.fragment.Four_Fragment;
 import edu.buu.daowe.fragment.Three_Fragment;
-import edu.buu.daowe.fragment.Two_Fragment;
 import edu.buu.daowe.http.BaseRequest;
 import okhttp3.Call;
 import okhttp3.MediaType;
@@ -98,6 +96,7 @@ public class MainActivity extends AppCompatActivity
 //        });
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setItemIconTintList(null);
         tvusername = navigationView.getHeaderView(0).findViewById(R.id.nav_username);
         tvsign = navigationView.getHeaderView(0).findViewById(R.id.nav_sign);
         imguserphoto = navigationView.getHeaderView(0).findViewById(R.id.userimg);
@@ -171,7 +170,7 @@ public class MainActivity extends AppCompatActivity
         //setSupportActionBar(mToolbar);
         mFragments = new ArrayList<>();
         mFragments.add(new CardShowClassFragment());
-        mFragments.add(new Two_Fragment());
+        mFragments.add(new CheckInFragment());
         mFragments.add(new Three_Fragment());
         mFragments.add(new Four_Fragment());
 
@@ -186,6 +185,7 @@ public class MainActivity extends AppCompatActivity
         mBottomNavigationView = findViewById(R.id.bv_bottomNavigation);
         // 解决当item大于三个时，非平均布局问题
         BottomNavigationViewHelper.disableShiftMode(mBottomNavigationView);
+
         mBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -194,6 +194,7 @@ public class MainActivity extends AppCompatActivity
                         setFragmentPosition(0);
                         break;
                     case R.id.menu_contacts:
+
                         setFragmentPosition(1);
                         break;
                     case R.id.menu_discover:
@@ -268,24 +269,39 @@ public class MainActivity extends AppCompatActivity
 //            transaction = fragmanager.beginTransaction();
 //        transaction.replace(R.id.main_frame,new CheckInFragment()).commit();
 
-            setFragmentPosition(4);
+            Intent it = new Intent(MainActivity.this, CameraSignInActivity.class);
+            startActivity(it);
 
         } else if (id == R.id.nav_cancellation) {
 //            transaction = fragmanager.beginTransaction();
 //            transaction.replace(R.id.main_frame,new CancellationFragment()).commit();
-            setFragmentPosition(5);
+            setFragmentPosition(4);
 
-        } else if (id == R.id.nav_slideshow) {
-            Intent picture = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            startActivityForResult(picture, 6);
+        } else if (id == R.id.nav_logout) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    OkHttpUtils.delete().addHeader("Authorization", "Bearer " + app.getToken()).url(BaseRequest.BASEURL + "auth/logout").build().execute(new StringCallback() {
+                        @Override
+                        public void onError(Call call, Exception e, int id) {
 
-        } else if (id == R.id.nav_tools) {
+                        }
 
-        } else if (id == R.id.nav_share) {
+                        @Override
+                        public void onResponse(String response, int id) {
+                            app.getEditor().putString("AUTOLOGIN", "false").commit();
+                            //  Log.e(TAG,response);
+                            finish();
+                            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                        }
+                    });
 
-        } else if (id == R.id.nav_send) {
+                }
+            }).start();
+
 
         }
+
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -307,93 +323,99 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, final int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        final String key = app.getUsername();
-        inputStream = null;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                // 创建ObjectMetadata类的实例
-                ObjectMetadata meta = new ObjectMetadata();
 
-                // 自定义元数据
-                meta.setContentType("image/jpeg");
-                BosClient client = new BosClient(BosUtils.initBosClientConfiguration());    //创建BOSClient实例
-                // 获取数据流
+        if (resultCode == -1) {
+            final String key = app.getUsername();
+            inputStream = null;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    // 创建ObjectMetadata类的实例
+                    ObjectMetadata meta = new ObjectMetadata();
 
-                try {
-                    inputStream = getContentResolver().openInputStream(data.getData());
-                    myinputstream = getContentResolver().openInputStream(data.getData());
-                    // 以数据流形式上传Object
-                    ObjectMetadata objectMetadata = new ObjectMetadata();
-                    objectMetadata.setContentType("image/jpeg");
-                    PutObjectRequest request = new PutObjectRequest("doways-avatar", key + ".jpg", inputStream, objectMetadata);
-                    request.setObjectMetadata(objectMetadata);
+                    // 自定义元数据
+                    meta.setContentType("image/jpeg");
+                    BosClient client = new BosClient(BosUtils.initBosClientConfiguration());    //创建BOSClient实例
+                    // 获取数据流
 
-                    request.setProgressCallback(new BosProgressCallback<PutObjectRequest>() {
-                        @Override
-                        public void onProgress(PutObjectRequest request, long currentSize, long totalSize) {
-                            Log.e(currentSize + "", totalSize + "");
-                            if (currentSize == totalSize) {
-                                Bitmap bitmap = BitmapFactory.decodeStream(myinputstream);
-                                //利用消息的方式把数据传送给handler
-                                Message msg = handler.obtainMessage();
-                                msg.obj = bitmap;
-                                handler.sendMessage(msg);
-                                try {
-                                    myinputstream.close();
-                                    inputStream.close();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
+                    try {
+                        inputStream = getContentResolver().openInputStream(data.getData());
+                        myinputstream = getContentResolver().openInputStream(data.getData());
+                        // 以数据流形式上传Object
+                        ObjectMetadata objectMetadata = new ObjectMetadata();
+                        objectMetadata.setContentType("image/jpeg");
+                        PutObjectRequest request = new PutObjectRequest("doways-avatar", key + ".jpg", inputStream, objectMetadata);
+                        request.setObjectMetadata(objectMetadata);
 
-                                try {
-                                    final JSONObject object = new JSONObject();
-                                    object.put("avatar", BaseRequest.BASEBOS + app.getUsername() + ".jpg");
-                                    Log.e(TAG, object.toString());
-                                    OkHttpUtils.patch().addHeader("Authorization", "Bearer " + app.getToken())
+                        request.setProgressCallback(new BosProgressCallback<PutObjectRequest>() {
+                            @Override
+                            public void onProgress(PutObjectRequest request, long currentSize, long totalSize) {
+                                Log.e(currentSize + "", totalSize + "");
+                                if (currentSize == totalSize) {
+                                    Bitmap bitmap = BitmapFactory.decodeStream(myinputstream);
+                                    //利用消息的方式把数据传送给handler
+                                    Message msg = handler.obtainMessage();
+                                    msg.obj = bitmap;
+                                    handler.sendMessage(msg);
+                                    try {
+                                        myinputstream.close();
+                                        inputStream.close();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
 
-                                            .requestBody(new RequestBody() {
-                                                @Override
-                                                public MediaType contentType() {
-                                                    return MediaType.parse("application/json; charset=utf-8");
-                                                }
+                                    try {
+                                        final JSONObject object = new JSONObject();
+                                        object.put("avatar", BaseRequest.BASEBOS + app.getUsername() + ".jpg");
+                                        Log.e(TAG, object.toString());
+                                        OkHttpUtils.patch().addHeader("Authorization", "Bearer " + app.getToken())
 
-                                                @Override
-                                                public void writeTo(BufferedSink sink) throws IOException {
-                                                    sink.outputStream().write(object.toString().getBytes());
-                                                }
+                                                .requestBody(new RequestBody() {
+                                                    @Override
+                                                    public MediaType contentType() {
+                                                        return MediaType.parse("application/json; charset=utf-8");
+                                                    }
 
-                                            })
-                                            .url(BaseRequest.BASEURL + "users/" + app.getStuid() + "/avatar").build()
-                                            .execute(new StringCallback() {
-                                                @Override
-                                                public void onError(Call call, Exception e, int id) {
-                                                    Log.e(TAG, e.toString());
-                                                }
+                                                    @Override
+                                                    public void writeTo(BufferedSink sink) throws IOException {
+                                                        sink.outputStream().write(object.toString().getBytes());
+                                                    }
 
-                                                @Override
-                                                public void onResponse(String response, int id) {
-                                                    Log.e(TAG, response.toString());
-                                                }
-                                            });
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
+                                                })
+                                                .url(BaseRequest.BASEURL + "users/" + app.getStuid() + "/avatar").build()
+                                                .execute(new StringCallback() {
+                                                    @Override
+                                                    public void onError(Call call, Exception e, int id) {
+                                                        Log.e(TAG, e.toString());
+                                                    }
+
+                                                    @Override
+                                                    public void onResponse(String response, int id) {
+                                                        Log.e(TAG, response.toString());
+                                                    }
+                                                });
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
                                 }
 
                             }
-
-                        }
-                    });
-                    String eTag = client.putObject(request).getETag();
+                        });
+                        String eTag = client.putObject(request).getETag();
 //            PutObjectResponse putObjectResponseFromInputStream = client.putObject("doways-avatar", key+".jpg", inputStream,meta);
 //            System.out.println(putObjectResponseFromInputStream.getETag());
 
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
 
-            }
-        }).start();
+                }
+            }).start();
+        } else {
+
+        }
+
 
 
     }

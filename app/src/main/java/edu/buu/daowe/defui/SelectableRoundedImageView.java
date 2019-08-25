@@ -1,4 +1,4 @@
-package edu.buu.daowe.Util;
+package edu.buu.daowe.defui;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -21,7 +21,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
 import edu.buu.daowe.R;
 

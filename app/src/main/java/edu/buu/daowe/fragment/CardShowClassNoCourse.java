@@ -10,10 +10,24 @@ import android.view.ViewGroup;
 
 import edu.buu.daowe.R;
 
-public class Two_Fragment extends Fragment {
+public class CardShowClassNoCourse extends Fragment {
+
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.activity_camera, null);
+        return inflater.inflate(R.layout.fragment_nocourse, null);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
     }
 }

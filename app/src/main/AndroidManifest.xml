@@ -14,10 +14,11 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera2"></uses-feature>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-
+    <uses-feature android:name="android.hardware.camera.autofocus" />
 
 
     <application
+        android:usesCleartextTraffic="true"
         android:name=".DaoWeApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -83,6 +84,10 @@
             android:screenOrientation="portrait"
             android:theme="@style/Account_Base.App.Theme.NoTitle"
             android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".activity.CameraSignInActivity"
+            android:theme="@style/AppTheme" />
     </application>
+
 
 </manifest>

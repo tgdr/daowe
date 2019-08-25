@@ -30,7 +30,9 @@ import java.util.Objects;
 
 import edu.buu.daowe.R;
 import edu.buu.daowe.Util.DateTimeUtil;
+import edu.buu.daowe.Util.ScanRecordUtil;
 import edu.buu.daowe.Util.SharedPreferenceUtil;
+import edu.buu.daowe.activity.LoginActivity;
 import edu.buu.daowe.activity.MainActivity;
 
 /**
@@ -165,7 +167,7 @@ public class ScanBeaconService extends Service {
                 notifManager.createNotificationChannel(mChannel);
             }
             builder = new android.support.v4.app.NotificationCompat.Builder(this);
-            intent = new Intent(this, MainActivity.class);
+            intent = new Intent(this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
@@ -226,12 +228,12 @@ public class ScanBeaconService extends Service {
 //                        RxBus.getDefault().send(new Event());
                         sharedPreferenceUtil.setTime(String.valueOf(System.currentTimeMillis()));
                     }
-
+                    ScanRecordUtil.test(result.getScanRecord().getBytes());
 //                    numRSSI++;
 //                    Utils.writeFile(getApplicationContext(),"wakeup.log",Integer.toString(numRSSI));
                     Log.i("Wakeup", "onScanResult2: name: " + result.getDevice().getName() +
                             ", address: " + result.getDevice().getAddress() +
-                            ", rssi: " + result.getRssi() + ", scanRecord: " +
+                            ", rssi: " + ", scanRecord: " +
                             result.getScanRecord().getManufacturerSpecificData().keyAt(0) + "        ");
                     receivedata.update(result);
                 }

@@ -147,6 +147,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 
         }
+
+
         //如果没有自动登陆 就显示登陆界面并初始化控件
         else{
             setContentView(R.layout.activity_main_login);
@@ -209,6 +211,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         mEtLoginUsername.addTextChangedListener(this);
         mEtLoginPwd.setOnFocusChangeListener(this);
         mEtLoginPwd.addTextChangedListener(this);
+        if (!spf.getString("username", "").equals("") && !spf.getString("password", "").equals("")) {
+            mEtLoginUsername.setText(spf.getString("username", ""));
+            mEtLoginPwd.setText(spf.getString("password", ""));
+        }
     }
 
     @Override
@@ -502,7 +508,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 .url(BaseRequest.BASEURL + "auth").build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
-                // Log.e("whatwhatwhat",e.toString());
+                Toast.makeText(LoginActivity.this, "用户名或密码输入错误，请重新检查！", Toast.LENGTH_SHORT).show();
             }
 
             @Override

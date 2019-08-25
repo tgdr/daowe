@@ -46,7 +46,7 @@ public class CardShowClassFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         app = (DaoWeApplication) getActivity().getApplication();
         super.onViewCreated(view, savedInstanceState);
-        recyclerView = view.findViewById(R.id.recycler_view);
+
 
 
         //初始化数据集
@@ -57,6 +57,7 @@ public class CardShowClassFragment extends Fragment {
     }
 
     private void initData() {
+        recyclerView = getView().findViewById(R.id.recycler_view);
         final ArrayList timeId = new ArrayList();
         Log.e("TAG", timeId.toString());
         final ArrayList courseName = new ArrayList();
@@ -79,16 +80,18 @@ public class CardShowClassFragment extends Fragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+
                         OkHttpUtils.get().addHeader("Authorization", "Bearer " + app.getToken())
                                 .url(BaseRequest.BASEURL + "users/" + app.getStuid() + "/course").build().execute(new StringCallback() {
                             @Override
                             public void onError(Call call, Exception e, int id) {
                                 //     Log.e("TAG","call"+e.toString());
-
+                                // Log.e("ttttttttttttttt","nbbbnnnnnnnnnn");
                             }
 
                             @Override
                             public void onResponse(String response, int id) {
+
                                 dataList = new ArrayList<>();
                                 JSONArray dataarray;
                                 //    Log.e("TAG",response);
@@ -96,7 +99,12 @@ public class CardShowClassFragment extends Fragment {
                                     JSONObject object = new JSONObject(response);
                                     if (object.getInt("code") == 200) {
 
-                                        dataarray = object.getJSONArray("data");
+                                        dataarray = object.getJSONArray("data");//Log.e("ttttttttttttttt","llllllllllllll");
+                                        if (dataarray.length() == 0) {
+                                            //  Log.e("TAG","66666666666666");
+
+                                            getFragmentManager().beginTransaction().replace(R.id.classno, new CardShowClassNoCourse(), "nocourse").commit();
+                                        }
                                         for (int i = 0; i < dataarray.length(); i++) {
                                             timeId.add(dataarray.getJSONObject(i).getString("timeId"));
                                             courseName.add(dataarray.getJSONObject(i).getString("courseName"));
