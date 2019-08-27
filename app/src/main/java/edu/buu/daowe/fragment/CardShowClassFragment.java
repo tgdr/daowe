@@ -8,6 +8,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -21,9 +24,13 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import edu.buu.daowe.DaoWeApplication;
 import edu.buu.daowe.R;
+import edu.buu.daowe.Util.MyTimeUtils;
 import edu.buu.daowe.adapter.CardData;
 import edu.buu.daowe.adapter.RecyclerViewAdapter;
 import edu.buu.daowe.http.BaseRequest;
@@ -46,6 +53,7 @@ public class CardShowClassFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         app = (DaoWeApplication) getActivity().getApplication();
         super.onViewCreated(view, savedInstanceState);
+        setHasOptionsMenu(true);
 
 
 
@@ -54,6 +62,31 @@ public class CardShowClassFragment extends Fragment {
         //初始化recyclerView
 
 
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.main, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_autoqj) {
+            Map piliangdata = mAdapter.getPiliangdata();
+            Set<Map.Entry<Integer, String>> entrySet = piliangdata.entrySet();
+
+            Iterator<Map.Entry<Integer, String>> it = entrySet.iterator();
+
+            while (it.hasNext()) {
+                Map.Entry temp = it.next();
+                String key = (String) temp.getKey() + "";
+                String value = (String) temp.getValue() + "";
+                Log.e(key, value);
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void initData() {
@@ -66,6 +99,7 @@ public class CardShowClassFragment extends Fragment {
         final ArrayList startTime = new ArrayList();
         final ArrayList endTime = new ArrayList();
         final ArrayList name = new ArrayList();
+        final ArrayList coursestatus = new ArrayList();
 
         new Thread(new Runnable() {
             @Override
@@ -95,6 +129,9 @@ public class CardShowClassFragment extends Fragment {
                                 dataList = new ArrayList<>();
                                 JSONArray dataarray;
                                 //    Log.e("TAG",response);
+                                ArrayList jcdatastarttemp = new ArrayList();
+                                ArrayList jcdataendtemp = new ArrayList();
+                                ArrayList jcdata = new ArrayList();
                                 try {
                                     JSONObject object = new JSONObject(response);
                                     if (object.getInt("code") == 200) {
@@ -105,7 +142,14 @@ public class CardShowClassFragment extends Fragment {
 
                                             getFragmentManager().beginTransaction().replace(R.id.classno, new CardShowClassNoCourse(), "nocourse").commit();
                                         }
+                                        Log.e("time", dataarray.toString());
+
                                         for (int i = 0; i < dataarray.length(); i++) {
+                                            String[] etime = dataarray.getJSONObject(i).getString("endTime").split(":");
+                                            String[] stime = dataarray.getJSONObject(i).getString("startTime").split(":");
+                                            jcdatastarttemp.add(stime);
+                                            jcdataendtemp.add(etime);
+                                            String status = MyTimeUtils.fun(Integer.valueOf(stime[0]), Integer.valueOf(stime[1]), Integer.valueOf(etime[0]), Integer.valueOf(etime[1]));
                                             timeId.add(dataarray.getJSONObject(i).getString("timeId"));
                                             courseName.add(dataarray.getJSONObject(i).getString("courseName"));
                                             buildingName.add(dataarray.getJSONObject(i).getString("buildingName"));
@@ -115,11 +159,22 @@ public class CardShowClassFragment extends Fragment {
                                             endTime.add(dataarray.getJSONObject(i).getString("endTime"));
                                             roomName.add(dataarray.getJSONObject(i).getString("roomName"));
                                             name.add(dataarray.getJSONObject(i).getString("name"));
+                                            coursestatus.add(status);
+
                                         }
+                                        jcdata.add(0, jcdatastarttemp);
+                                        jcdata.add(1, jcdataendtemp);
+                                        app.setJctime(jcdata);
+
                                         for (int i = 0; i < timeId.size(); i++) {
+                                            //  Log.e("smsmsmsmsmsmsmsmsm",coursestatus.get(i)+"");
                                             dataList.add(new CardData(new SimpleDateFormat("yyyy年MM月dd日").format(new Date())
-                                                    + "", name.get(i) + "", buildingName.get(i) + "-" + roomName.get(i), startTime.get(i) + "-" + endTime.get(i), timeId.get(i) + "", false, courseName.get(i) + ""));
+                                                    + "", name.get(i) + "", buildingName.get(i) + "-" + roomName.get(i),
+                                                    startTime.get(i) + "-" + endTime.get(i), timeId.get(i) + "", courseName.get(i) + "", coursestatus.get(i) + ""));
                                         }
+                                        Log.e("tag", dataList.toString() + "");
+
+
                                         RecyclerView.LayoutManager linearManager = new LinearLayoutManager(getActivity());
                                         mAdapter = new RecyclerViewAdapter(getActivity(), dataList);
 

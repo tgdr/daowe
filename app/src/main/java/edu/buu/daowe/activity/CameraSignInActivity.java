@@ -123,9 +123,30 @@ public class CameraSignInActivity extends Activity {
                 camera = null;
             }
 
+            //获取前置摄像头
+            public Camera getCamera() {
+                camera = null;
+                Camera.CameraInfo info = new Camera.CameraInfo();
+                int cnt = Camera.getNumberOfCameras();
+                for (int i = 0; i < cnt; i++) {
+                    Camera.getCameraInfo(i, info);
+
+                    if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                        try {
+                            camera = Camera.open(i);
+                        } catch (RuntimeException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                return camera;
+            }
+
+
+
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
-                camera = Camera.open(1);
+                camera = getCamera();
                 try {
                     camera.setPreviewDisplay(holder);
                 } catch (Exception e) {
@@ -190,7 +211,8 @@ public class CameraSignInActivity extends Activity {
 
 
                                         JSONObject data2 = new JSONObject();
-                                        data2.put("image_type", "FACE_TOKEN");
+                                        data2.put("image_type", "URL" +
+                                                "");
                                         data2.put("image", facetoken);
                                         //   data2.put("face_field", "faceshape,facetype");
 

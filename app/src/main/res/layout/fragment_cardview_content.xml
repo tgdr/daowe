@@ -28,21 +28,33 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_gravity="center"
                 android:orientation="horizontal">
 
                 <edu.buu.daowe.defui.SelectableRoundedImageView
-                    android:layout_width="wrap_content"
+                    android:layout_width="32dp"
                     android:id="@+id/img_card_status"
-                    android:layout_height="wrap_content"
+                    android:layout_height="32dp"
                     android:src="@mipmap/form_checkbox_checked" />
 
                 <TextView
+                    android:layout_weight="2"
                     android:id="@+id/tv_card_date"
                     android:layout_gravity="center"
-                    android:gravity="center"
-                    android:layout_width="wrap_content"
+
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="1970年1月1日" />
+
+                <TextView
+                    android:id="@+id/tv_card_coursestatus"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+
+                    android:layout_gravity="center"
+                    android:gravity="right"
+                    android:text="N/A" />
 
 
             </LinearLayout>
@@ -110,15 +122,29 @@
 
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/tv_card_course_teacher"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:gravity="right"
-                    android:text="刘建国"
+                    android:orientation="vertical">
 
-                    android:textSize="10dp" />
+                    <CheckBox
+                        android:id="@+id/checkpiliang"
+                        android:visibility="invisible"
+                        android:layout_gravity="right"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/tv_card_course_teacher"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:gravity="right"
+                        android:text="刘建国"
+
+                        android:textSize="10dp" />
+                </LinearLayout>
+
             </LinearLayout>
 
 

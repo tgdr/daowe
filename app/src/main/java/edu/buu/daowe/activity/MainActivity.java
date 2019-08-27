@@ -19,7 +19,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -51,7 +50,7 @@ import edu.buu.daowe.fragment.CancellationFragment;
 import edu.buu.daowe.fragment.CardShowClassFragment;
 import edu.buu.daowe.fragment.CheckInFragment;
 import edu.buu.daowe.fragment.Four_Fragment;
-import edu.buu.daowe.fragment.Three_Fragment;
+import edu.buu.daowe.fragment.SchooClalendarFragment;
 import edu.buu.daowe.http.BaseRequest;
 import okhttp3.Call;
 import okhttp3.MediaType;
@@ -171,7 +170,7 @@ public class MainActivity extends AppCompatActivity
         mFragments = new ArrayList<>();
         mFragments.add(new CardShowClassFragment());
         mFragments.add(new CheckInFragment());
-        mFragments.add(new Three_Fragment());
+        mFragments.add(new SchooClalendarFragment());
         mFragments.add(new Four_Fragment());
 
         mFragments.add(new CheckInFragment());
@@ -236,27 +235,27 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.main, menu);
+//        return false;
+//    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        // Handle action bar item clicks here. The action bar will
+//        // automatically handle clicks on the Home/Up button, so long
+//        // as you specify a parent activity in AndroidManifest.xml.
+//        int id = item.getItemId();
+//
+//        //noinspection SimplifiableIfStatement
+////        if (id == R.id.action_settings) {
+////            return true;
+////        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override

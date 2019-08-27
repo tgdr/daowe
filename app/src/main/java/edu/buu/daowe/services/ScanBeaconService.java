@@ -252,6 +252,7 @@ public class ScanBeaconService extends Service {
     private BroadcastReceiver mScreenReceive = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+
             String action=intent.getAction();
           //  Log.e("AAAAAA","AAAAAAAAA");
             if(action.equals(Intent.ACTION_SCREEN_ON)){

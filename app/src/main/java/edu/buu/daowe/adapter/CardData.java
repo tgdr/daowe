@@ -5,12 +5,22 @@ import java.io.Serializable;
 public class CardData implements Serializable {
     String date;
 
+
+    public String getCoursestatus() {
+        return coursestatus;
+    }
+
+    public void setCoursestatus(String coursestatus) {
+        this.coursestatus = coursestatus;
+    }
+
+    String coursestatus;
     String teachername;
     String courseposition;
     String coursetime;
     String coursenum;
 
-    public CardData(String date, String teachername, String courseposition, String coursetime, String coursenum, boolean coursestatus, String coursename) {
+    public CardData(String date, String teachername, String courseposition, String coursetime, String coursenum, String coursename, String coursestatus) {
         this.date = date;
 
         this.teachername = teachername;
@@ -29,15 +39,9 @@ public class CardData implements Serializable {
         this.coursenum = coursenum;
     }
 
-    public boolean isCoursestatus() {
-        return coursestatus;
-    }
 
-    public void setCoursestatus(boolean coursestatus) {
-        this.coursestatus = coursestatus;
-    }
 
-    boolean coursestatus;
+
 
     public String getDate() {
         return date;
@@ -86,9 +90,11 @@ public class CardData implements Serializable {
     public String toString() {
         return "CardData{" +
                 "date='" + date + '\'' +
+                ", coursestatus='" + coursestatus + '\'' +
                 ", teachername='" + teachername + '\'' +
                 ", courseposition='" + courseposition + '\'' +
                 ", coursetime='" + coursetime + '\'' +
+                ", coursenum='" + coursenum + '\'' +
                 ", coursename='" + coursename + '\'' +
                 '}';
     }

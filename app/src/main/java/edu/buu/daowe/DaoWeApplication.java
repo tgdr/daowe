@@ -4,11 +4,13 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.cookie.CookieJarImpl;
 import com.zhy.http.okhttp.cookie.store.PersistentCookieStore;
 
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -20,6 +22,27 @@ import okhttp3.OkHttpClient;
 
 
 public class DaoWeApplication extends Application {
+
+    public boolean qdflag = false;
+
+    public ArrayList getJctime() {
+        if (jctime == null) {
+            jctime = new ArrayList();
+        }
+        return jctime;
+    }
+
+    public void setJctime(ArrayList jctime) {
+
+        this.jctime = jctime;
+        Log.e("bbbbbbbb", jctime.toString());
+    }
+
+    ArrayList jctime;
+
+
+
+
     public SharedPreferences getSpf() {
         return spf;
     }
@@ -87,6 +110,7 @@ public class DaoWeApplication extends Application {
         return mListener;
     }
 
+    boolean flag = false;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -101,6 +125,7 @@ public class DaoWeApplication extends Application {
                 .build();
 
         OkHttpUtils.initClient(okHttpClient);
+
     }
 
     public  interface HandlerListener {
