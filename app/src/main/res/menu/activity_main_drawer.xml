@@ -22,6 +22,23 @@
             android:icon="@drawable/ic_menu_logout"
             android:title="@string/menu_exit" />
     </group>
-
+    <item android:title="我的备忘录">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_all"
+                    android:icon="@drawable/ic_menu_all"
+                    android:title="所有备忘录" />
+                <item
+                    android:id="@+id/nav_finish"
+                    android:icon="@drawable/ic_menu_finish"
+                    android:title="已完成备忘录" />
+                <item
+                    android:id="@+id/nav_unfinish"
+                    android:icon="@drawable/ic_menu_unfinish"
+                    android:title="未完成备忘录" />
+            </group>
+        </menu>
+    </item>
 
 </menu>

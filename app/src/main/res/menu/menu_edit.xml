@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.lrogzin.memo.UI.EditActivity">
+
+    <item
+        android:id="@+id/action_new_giveup"
+        android:orderInCategory="100"
+        android:title="放弃"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_new_save"
+        android:orderInCategory="100"
+        android:title="保存"
+        app:showAsAction="always" />
+
+</menu>

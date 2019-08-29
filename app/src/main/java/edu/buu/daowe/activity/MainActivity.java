@@ -1,13 +1,16 @@
 package edu.buu.daowe.activity;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -18,11 +21,16 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableString;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.baidubce.services.bos.BosClient;
 import com.baidubce.services.bos.callback.BosProgressCallback;
@@ -41,16 +49,19 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.buu.daowe.Bean.NoteBean;
+import edu.buu.daowe.DB.NoteDao;
+import edu.buu.daowe.DB.UserDao;
 import edu.buu.daowe.DaoWeApplication;
 import edu.buu.daowe.R;
 import edu.buu.daowe.Util.BosUtils;
 import edu.buu.daowe.Util.BottomNavigationViewHelper;
 import edu.buu.daowe.dialogue.ModifyPhotoBottomDialog;
-import edu.buu.daowe.fragment.CancellationFragment;
 import edu.buu.daowe.fragment.CardShowClassFragment;
 import edu.buu.daowe.fragment.CheckInFragment;
-import edu.buu.daowe.fragment.Four_Fragment;
+import edu.buu.daowe.fragment.MemoFragment;
 import edu.buu.daowe.fragment.SchooClalendarFragment;
+import edu.buu.daowe.fragment.UserCenter_Fragment;
 import edu.buu.daowe.http.BaseRequest;
 import okhttp3.Call;
 import okhttp3.MediaType;
@@ -60,29 +71,43 @@ import okio.BufferedSink;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     FragmentManager fragmanager;
+    AppBarLayout mybar;
+    private static final int TIME_INTERVAL = 2000;
+    private NoteDao noteDao;
+    private int nav_selected;
+    long mBackPressed;
+    private Menu menuNav;
     FragmentTransaction transaction;
     TextView tvusername, tvsign;
     ImageView img, imguserphoto;
     DaoWeApplication app;
     JSONObject userinfo;
+    NavigationView navigationView;
+    private List<NoteBean> noteList;
     public static String TAG = "MainActivity";
     InputStream inputStream, myinputstream = null;
     private BottomNavigationView mBottomNavigationView;
-
+    private UserDao userdao;
     private int lastIndex;
     List<Fragment> mFragments;
-
+    Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         app = (DaoWeApplication) getApplication();
+        mybar = findViewById(R.id.mybar);
         fragmanager = getSupportFragmentManager();
-        transaction = fragmanager.beginTransaction();
-        //   transaction.replace(R.id.main_frame,new CheckInFragment()).commit();
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
+
+        userdao = new UserDao(this);
+
+        //   transaction.replace(R.id.main_frame,new CheckInFragment()).commit();
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        mybar.setVisibility(View.VISIBLE);
+        toolbar.setVisibility(View.VISIBLE);
+        noteDao = new NoteDao(this);
         initBottomNavigation();
         initData();
 //        FloatingActionButton fab = findViewById(R.id.fab);
@@ -94,7 +119,7 @@ public class MainActivity extends AppCompatActivity
 //            }
 //        });
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setItemIconTintList(null);
         tvusername = navigationView.getHeaderView(0).findViewById(R.id.nav_username);
         tvsign = navigationView.getHeaderView(0).findViewById(R.id.nav_sign);
@@ -125,7 +150,7 @@ public class MainActivity extends AppCompatActivity
                         app.setStuid(userinfo.getString("id"));
                         tvsign.setText(userinfo.getString("introduction"));
                         tvusername.setText(userinfo.getString("name"));
-
+                        setCount();
                         //https://i.loli.net/2019/08/18/VwGi1O8pnN5xljA.jpg   userinfo.getString("avatar")
                         OkHttpUtils.get().url(userinfo.getString("avatar")).build().execute(new BitmapCallback() {
                             @Override
@@ -138,6 +163,8 @@ public class MainActivity extends AppCompatActivity
                                 imguserphoto.setImageBitmap(response);
                             }
                         });
+
+
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -163,20 +190,25 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+
     }
 
     private void initData() {
+
         //setSupportActionBar(mToolbar);
         mFragments = new ArrayList<>();
         mFragments.add(new CardShowClassFragment());
         mFragments.add(new CheckInFragment());
         mFragments.add(new SchooClalendarFragment());
-        mFragments.add(new Four_Fragment());
+        mFragments.add(new UserCenter_Fragment());
 
         mFragments.add(new CheckInFragment());
-        mFragments.add(new CancellationFragment());
+        mFragments.add(new MemoFragment());
+        // mFragments.add(new CancellationFragment());
         // mFragments.add(new AccountFragment());
         // 初始化展示MessageFragment
+        mybar.setVisibility(View.VISIBLE);
+        toolbar.setVisibility(View.VISIBLE);
         setFragmentPosition(0);
     }
 
@@ -190,17 +222,28 @@ public class MainActivity extends AppCompatActivity
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.menu_message:
+                        mybar.setVisibility(View.VISIBLE);
+                        toolbar.setVisibility(View.VISIBLE);
                         setFragmentPosition(0);
+                        setTitle("今日课表");
                         break;
                     case R.id.menu_contacts:
-
+                        mybar.setVisibility(View.VISIBLE);
+                        toolbar.setVisibility(View.VISIBLE);
                         setFragmentPosition(1);
+                        setTitle("签到");
                         break;
                     case R.id.menu_discover:
+                        mybar.setVisibility(View.VISIBLE);
+                        toolbar.setVisibility(View.VISIBLE);
                         setFragmentPosition(2);
+                        setTitle("校历");
                         break;
                     case R.id.menu_me:
+                        mybar.setVisibility(View.GONE);
+                        toolbar.setVisibility(View.GONE);
                         setFragmentPosition(3);
+                        setTitle("个人中心");
                         break;
                     default:
                         break;
@@ -209,6 +252,19 @@ public class MainActivity extends AppCompatActivity
                 return true;
             }
         });
+    }
+
+    private void setFragmentPositionWithData(int data) {
+        transaction = fragmanager.beginTransaction();
+        MemoFragment memoFragment = new MemoFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt("mark", data);
+        memoFragment.setArguments(bundle);
+        transaction.hide(mFragments.get(lastIndex)).replace(R.id.main_frame, memoFragment);
+        transaction.show(memoFragment);
+        transaction.commit();
+
+
     }
 
     private void setFragmentPosition(int position) {
@@ -231,8 +287,17 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if (mBackPressed + TIME_INTERVAL > System.currentTimeMillis()) {
+                super.onBackPressed();
+                System.exit(0);
+                return;
+            } else {
+                Toast.makeText(getBaseContext(), "再按一次返回退出程序", Toast.LENGTH_SHORT).show();
+            }
+
+            mBackPressed = System.currentTimeMillis();
         }
+
     }
 
 //    @Override
@@ -267,16 +332,23 @@ public class MainActivity extends AppCompatActivity
             // Handle the camera action
 //            transaction = fragmanager.beginTransaction();
 //        transaction.replace(R.id.main_frame,new CheckInFragment()).commit();
-
+            mybar.setVisibility(View.VISIBLE);
+            toolbar.setVisibility(View.VISIBLE);
             Intent it = new Intent(MainActivity.this, CameraSignInActivity.class);
             startActivity(it);
 
         } else if (id == R.id.nav_cancellation) {
 //            transaction = fragmanager.beginTransaction();
 //            transaction.replace(R.id.main_frame,new CancellationFragment()).commit();
-            setFragmentPosition(4);
+            mybar.setVisibility(View.VISIBLE);
+            toolbar.setVisibility(View.VISIBLE);
+            Intent it = new Intent(MainActivity.this, CameraholidayActivity.class);
+            startActivity(it);
+
 
         } else if (id == R.id.nav_logout) {
+            mybar.setVisibility(View.VISIBLE);
+            toolbar.setVisibility(View.VISIBLE);
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -298,6 +370,29 @@ public class MainActivity extends AppCompatActivity
                 }
             }).start();
 
+
+        } else if (id == R.id.nav_all) {
+            nav_selected = 3;
+            refreshNoteList(app.getStuid(), nav_selected);
+
+            setFragmentPositionWithData(3);
+
+
+            // setFragmentPosition(5);
+            setTitle("备忘录");
+
+        } else if (id == R.id.nav_finish) {
+            nav_selected = 1;
+            refreshNoteList(app.getStuid(), nav_selected);
+            setFragmentPositionWithData(1);
+            setTitle("备忘录");
+
+        } else if (id == R.id.nav_unfinish) {
+            nav_selected = 0;
+            refreshNoteList(app.getStuid(), nav_selected);
+
+            setFragmentPositionWithData(0);
+            setTitle("备忘录");
 
         }
 
@@ -368,7 +463,6 @@ public class MainActivity extends AppCompatActivity
                                         object.put("avatar", BaseRequest.BASEBOS + app.getUsername() + ".jpg");
                                         Log.e(TAG, object.toString());
                                         OkHttpUtils.patch().addHeader("Authorization", "Bearer " + app.getToken())
-
                                                 .requestBody(new RequestBody() {
                                                     @Override
                                                     public MediaType contentType() {
@@ -418,4 +512,80 @@ public class MainActivity extends AppCompatActivity
 
 
     }
+
+    //设置抽屉菜单是否完成备忘录的数量
+    private void setCount() {
+        Cursor cursor0 = noteDao.getAllData(app.getStuid());
+        noteList = new ArrayList<>();
+        if (cursor0 != null) {
+            while (cursor0.moveToNext()) {
+                NoteBean bean = new NoteBean();
+                bean.setId(cursor0.getInt(cursor0.getColumnIndex("note_id")));
+                bean.setTitle(cursor0.getString(cursor0.getColumnIndex("note_tittle")));
+                bean.setContent(cursor0.getString(cursor0.getColumnIndex("note_content")));
+                bean.setType(cursor0.getString(cursor0.getColumnIndex("note_type")));
+                bean.setMark(cursor0.getInt(cursor0.getColumnIndex("note_mark")));
+                bean.setCreateTime(cursor0.getString(cursor0.getColumnIndex("createTime")));
+                bean.setUpdateTime(cursor0.getString(cursor0.getColumnIndex("updateTime")));
+                bean.setOwner(cursor0.getString(cursor0.getColumnIndex("note_owner")));
+                noteList.add(bean);
+            }
+        }
+        cursor0.close();
+        Cursor cursor = userdao.query(app.getStuid() + "");
+        if (cursor.moveToNext()) {
+            //Toast.makeText(getApplicationContext(),"该用户已被注册，请重新输入",Toast.LENGTH_LONG).show();
+            // userName.requestFocus();
+        } else {
+            userdao.insertUser(app.getStuid());
+            cursor.close();
+
+        }
+        menuNav = navigationView.getMenu();
+        int unfinishNum = noteDao.countType(app.getStuid(), 0);//未完成备忘录
+        int finishNum = noteDao.countType(app.getStuid(), 1);//已完成备忘录
+        int allNum = finishNum + unfinishNum;//所有备忘录
+        MenuItem nav_all = menuNav.findItem(R.id.nav_all);
+        MenuItem nav_finish = menuNav.findItem(R.id.nav_finish);
+        MenuItem nav_unfinish = menuNav.findItem(R.id.nav_unfinish);
+
+        String all_before = "所有备忘录";
+        String finish_before = "已完成备忘录";
+        String unfinish_before = "未完成备忘录";
+
+        nav_all.setTitle(setSpanTittle(all_before, allNum));
+        nav_finish.setTitle(setSpanTittle(finish_before, finishNum));
+        nav_unfinish.setTitle(setSpanTittle(unfinish_before, unfinishNum));
+
+    }
+
+    //设置抽屉菜单是否完成备忘录数量的文字样式
+    private SpannableString setSpanTittle(String tittle, int num) {
+        String tittle2 = tittle + "      " + num + "  ";
+        SpannableString sColored = new SpannableString(tittle2);
+        sColored.setSpan(new BackgroundColorSpan(Color.GRAY), tittle2.length() - (num + "").length() - 4, tittle2.length(), 0);
+        sColored.setSpan(new ForegroundColorSpan(Color.WHITE), tittle2.length() - (num + "").length() - 4, tittle2.length(), 0);
+        return sColored;
+    }
+
+    //刷新数据库数据，其实对notelist单一更新即可，不必重新获取，但是偷懒了
+    private void refreshNoteList(String login_user, int mark) {//mark--0=查询未完成，1=查询已完成，>1=查询所有
+        noteList = noteDao.queryNotesAll(login_user, mark);
+        //  mNoteListAdapter.setmNotes(noteList);
+        // mNoteListAdapter.notifyDataSetChanged();
+        setCount();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (app.getStuid() != null && !app.getStuid().equals("")) {
+            refreshNoteList(app.getStuid(), 0);
+            refreshNoteList(app.getStuid(), 1);
+            refreshNoteList(app.getStuid(), 2);
+            setCount();
+        }
+
+    }
+
 }

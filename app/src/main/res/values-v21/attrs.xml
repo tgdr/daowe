@@ -11,5 +11,12 @@
         <attr name="group_padding_right" format="dimension" />
         <attr name="group_has_header" format="boolean" />
     </declare-styleable>
-
+    <declare-styleable name="ItemView">
+        <attr name="left_icon" format="integer" />
+        <attr name="show_left_icon" format="boolean" />
+        <attr name="left_text" format="string" />
+        <attr name="right_text" format="string" />
+        <attr name="show_right_arrow" format="boolean" />
+        <attr name="show_bottom_line" format="boolean" />
+    </declare-styleable>
 </resources>

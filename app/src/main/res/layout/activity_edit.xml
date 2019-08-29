@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_new"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/grey_100"
+    android:orientation="vertical"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    <EditText
+        android:id="@+id/et_new_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:hint="请输入标题"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="@dimen/text_size_18"
+        android:textColor="@color/grey_700"
+        android:padding="@dimen/activity_margin_16" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/activity_margin_16"
+        android:paddingRight="@dimen/activity_margin_16"
+        android:paddingBottom="@dimen/activity_margin_16">
+
+
+        <TextView
+            android:id="@+id/tv_remindtime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="点击设置完成时间"
+            android:textSize="@dimen/text_size_14"
+            android:textColor="@color/grey_800"
+            android:layout_alignParentLeft="true" />
+
+        <Spinner
+            android:id="@+id/type_select"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/note_type"
+            android:layout_alignParentRight="true"
+            android:textSize="@dimen/text_size_14"
+            android:textColor="@color/grey_800"
+            android:layout_alignBottom="@+id/tv_remindtime" />
+
+    </RelativeLayout>
+
+    <EditText
+        android:id="@+id/et_new_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textSize="@dimen/text_size_16"
+        android:padding="@dimen/activity_margin_16"
+        android:gravity="top"
+        android:background="@null"
+        android:textColor="@color/grey_600" />
+
+</LinearLayout>

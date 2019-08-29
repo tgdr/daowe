@@ -5,6 +5,8 @@
     android:id="@+id/classno">
 
     <android.support.v7.widget.RecyclerView
+
+        android:layout_marginTop="@dimen/fragment_top"
     android:id="@+id/recycler_view"
     android:layout_height="match_parent"
     android:layout_width="match_parent">

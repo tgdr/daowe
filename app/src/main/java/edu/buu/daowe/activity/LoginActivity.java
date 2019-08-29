@@ -35,6 +35,7 @@ import org.json.JSONObject;
 
 import edu.buu.daowe.DaoWeApplication;
 import edu.buu.daowe.R;
+import edu.buu.daowe.Util.PermissionsUtil;
 import edu.buu.daowe.http.BaseRequest;
 import okhttp3.Call;
 import okhttp3.MediaType;
@@ -74,6 +75,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         //从application中获取信息（侧滑菜单上的用户名 因为在登陆时存放了全局变量 所以利用app进行读取）
         app= (DaoWeApplication) getApplication();
+        PermissionsUtil.checkAndRequestPermissions(this);
         spf = app.getSpf();
         //申请动态权限的列表
          String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE

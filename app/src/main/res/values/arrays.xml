@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="note_type">
+        <item>默认笔记</item>
+        <item>学习笔记</item>
+        <item>生活笔记</item>
+        <item>消费笔记</item>
+        <item>其他笔记</item>
+    </string-array>
+</resources>

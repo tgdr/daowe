@@ -40,4 +40,6 @@
         <attr name="sriv_oval" format="boolean" />
         <attr name="android:scaleType" />
     </declare-styleable>
+
+
 </resources>

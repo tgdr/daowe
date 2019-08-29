@@ -87,6 +87,13 @@
         <activity
             android:name=".activity.CameraSignInActivity"
             android:theme="@style/AppTheme" />
+        <activity android:name=".activity.memo.EditActivity" />
+        <activity android:name=".fragment.MemoFragment" />
+        <activity android:name=".activity.memo.NoteActivity" />
+        <activity
+            android:name=".activity.CameraholidayActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme" />
     </application>
 
 

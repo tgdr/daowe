@@ -6,11 +6,13 @@
     android:layout_height="match_parent"
     android:background="#ffffff"
     android:fitsSystemWindows="true"
+
     android:orientation="vertical"
     tools:ignore="RtlHardcoded,HardcodedText,RtlSymmetry,SmallSp">
 
 
     <RelativeLayout
+        android:layout_marginTop="@dimen/fragment_top"
         android:id="@+id/rl_tool"
         android:layout_width="match_parent"
         android:layout_height="52dp">

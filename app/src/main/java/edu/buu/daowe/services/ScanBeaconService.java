@@ -1,6 +1,7 @@
 package edu.buu.daowe.services;
 
 import android.annotation.TargetApi;
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -40,6 +41,9 @@ import edu.buu.daowe.activity.MainActivity;
  */
 public class ScanBeaconService extends Service {
     Receivedata receivedata;
+    AlarmManager manager;
+    //  PendingIntent pi;
+    boolean scanflag = false;
     int i =0;
     MyBinder binder;
     SharedPreferenceUtil sharedPreferenceUtil;
@@ -85,6 +89,7 @@ public class ScanBeaconService extends Service {
 
             }
         };
+        manager = (AlarmManager) getSystemService(ALARM_SERVICE);
 //        sharedPreferenceUtil.setCreateTime(String.valueOf(System.currentTimeMillis()));
 
 //        //以前台服务的方式启动，要调用startForeground，否则会出现arn异常
@@ -102,8 +107,15 @@ public class ScanBeaconService extends Service {
                 1,
                 new Intent("com.hungrytree.receiver.BleService").setPackage(getPackageName()),
                 PendingIntent.FLAG_UPDATE_CURRENT);
+        //       pi=PendingIntent.getBroadcast(this,0,new Intent(this,mScreenReceive.class),0);;
+        //    manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,triggerAtTime,pi);
+        if (scanflag == false) {
+            onOpen();
+            scanflag = true;
+        } else {
 
-        onOpen();
+        }
+
 
 //        keepLiveManager = new KeepLiveManager(getApplicationContext());
 //        keepLiveManager.scheduleJob();
@@ -209,47 +221,56 @@ public class ScanBeaconService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent.getAction() == null) {
 
-            return START_STICKY;
+            return super.onStartCommand(intent, flags, startId);
         }
 
-        //获取返回的错误码
-       errorCode = intent.getIntExtra(BluetoothLeScanner.EXTRA_ERROR_CODE, -1);//ScanSettings.SCAN_FAILED_*
-        //获取到的蓝牙设备的回调类型
-        int callbackType = intent.getIntExtra(BluetoothLeScanner.EXTRA_CALLBACK_TYPE, -1);//ScanSettings.CALLBACK_TYPE_*
-        Log.e("errorcodeerror",errorCode+"               ");
-        if (errorCode == -1) {
-            //扫描到蓝牙设备信息
-            List<ScanResult> scanResults = (List<ScanResult>) intent.getSerializableExtra(BluetoothLeScanner.EXTRA_LIST_SCAN_RESULT);
-            if (scanResults != null) {
-                for (ScanResult result : scanResults) {
+        for (long t = 0; t < 100; t++) {
+            try {
+                Thread.sleep(10);
+                //获取返回的错误码
+                errorCode = intent.getIntExtra(BluetoothLeScanner.EXTRA_ERROR_CODE, -1);//ScanSettings.SCAN_FAILED_*
+                //获取到的蓝牙设备的回调类型
+                int callbackType = intent.getIntExtra(BluetoothLeScanner.EXTRA_CALLBACK_TYPE, -1);//ScanSettings.CALLBACK_TYPE_*
+                Log.e("errorcodeerror",errorCode+"               ");
+                if (errorCode == -1) {
+                    //扫描到蓝牙设备信息
+                    List<ScanResult> scanResults = (List<ScanResult>) intent.getSerializableExtra(BluetoothLeScanner.EXTRA_LIST_SCAN_RESULT);
+                    if (scanResults != null) {
+                        for (ScanResult result : scanResults) {
 
-                    i++;
-                    if(i % 10 == 0){
+                            i++;
+                            if(i % 10 == 0){
 //                        RxBus.getDefault().send(new Event());
-                        sharedPreferenceUtil.setTime(String.valueOf(System.currentTimeMillis()));
-                    }
-                    ScanRecordUtil.test(result.getScanRecord().getBytes());
+                                sharedPreferenceUtil.setTime(String.valueOf(System.currentTimeMillis()));
+                            }
+                            ScanRecordUtil.test(result.getScanRecord().getBytes());
 //                    numRSSI++;
 //                    Utils.writeFile(getApplicationContext(),"wakeup.log",Integer.toString(numRSSI));
-                    Log.i("Wakeup", "onScanResult2: name: " + result.getDevice().getName() +
-                            ", address: " + result.getDevice().getAddress() +
-                            ", rssi: " + ", scanRecord: " +
-                            result.getScanRecord().getManufacturerSpecificData().keyAt(0) + "        ");
-                    receivedata.update(result);
-                }
-            }
+                            Log.i("Wakeup", "onScanResult2: name: " + result.getDevice().getName() +
+                                    ", address: " + result.getDevice().getAddress() +
+                                    ", rssi: " + ", scanRecord: " +
+                                    result.getScanRecord().getManufacturerSpecificData().keyAt(0) + "        ");
+                            receivedata.update(result);
+                        }
+                    }
 
-        } else {
-            //此处为扫描失败的错误处理
-            Log.e("TestSertvicscdcscs","scanfailed!");
-                receivedata.update(1);
+                } else {
+                    //此处为扫描失败的错误处理
+                    Log.e("TestSertvicscdcscs","scanfailed!");
+                    receivedata.update(1);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
+        onClose();
+
+
         return START_STICKY;
     }
 
 
-
-    private BroadcastReceiver mScreenReceive = new BroadcastReceiver() {
+    public BroadcastReceiver mScreenReceive = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
 
@@ -259,12 +280,12 @@ public class ScanBeaconService extends Service {
                 awakeSysyem();
                 Log.e("ACTION_SCREEN_ON","ACTION_SCREEN_ONACTION_SCREEN_ON");
 //                onClose();
-//                onOpen();
+                onOpen();
             }else if(action.equals(Intent.ACTION_SCREEN_OFF)){
                 awakeSysyem();
                 Log.e("ACTION_SCREEN_OFFACTION_SCREEN_OFF","ACTION_SCREEN_OFFACTION_SCREEN_OFF");
 //                onClose();
-//                onOpen();
+                onOpen();
             }else if(action.equals(Intent.ACTION_USER_PRESENT)){
                 Log.e("ACTION_USER_PRESENT","ACTION_USER_PRESENT");
             }
@@ -295,8 +316,8 @@ public class ScanBeaconService extends Service {
                             case BluetoothAdapter.STATE_TURNING_ON:
                                 break;
                             case BluetoothAdapter.STATE_ON:
-                                onOpen();
-                                Log.e("GGGGGGGG","GGGGGGG");
+                                // onOpen();
+                                //  Log.e("GGGGGGGG","GGGGGGG");
                                 break;
                             case BluetoothAdapter.STATE_TURNING_OFF:
                                 break;
@@ -311,6 +332,8 @@ public class ScanBeaconService extends Service {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void onOpen(){
+
+
         //BluetoothManager是向蓝牙设备通讯的入口
         BluetoothManager bluetoothManager = (BluetoothManager)getSystemService(Context.BLUETOOTH_SERVICE);
         BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();

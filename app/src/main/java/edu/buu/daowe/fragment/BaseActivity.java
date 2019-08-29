@@ -15,13 +15,15 @@ import android.view.WindowManager;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import edu.buu.daowe.DaoWeApplication;
+
 /**
  * 基类
  * Created by huanghaibin on 2017/11/16.
  */
 
 abstract class BaseFragment extends Fragment {
-
+    DaoWeApplication app;
     private static boolean isMiUi = false;
 
     protected void initWindow() {
@@ -43,6 +45,7 @@ abstract class BaseFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        app = (DaoWeApplication) getActivity().getApplication();
         initWindow();
         initView();
         initData();

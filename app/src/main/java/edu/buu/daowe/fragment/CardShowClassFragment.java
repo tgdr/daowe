@@ -154,10 +154,10 @@ public class CardShowClassFragment extends Fragment {
                                             courseName.add(dataarray.getJSONObject(i).getString("courseName"));
                                             buildingName.add(dataarray.getJSONObject(i).getString("buildingName"));
                                             courseName.add(dataarray.getJSONObject(i).getString("courseName"));
-                                            roomName.add(dataarray.getJSONObject(i).getString("roomName"));
+                                            roomName.add(dataarray.getJSONObject(i).getInt("floorsMajor") + "0" + dataarray.getJSONObject(i).getInt("roomMinor"));
                                             startTime.add(dataarray.getJSONObject(i).getString("startTime"));
                                             endTime.add(dataarray.getJSONObject(i).getString("endTime"));
-                                            roomName.add(dataarray.getJSONObject(i).getString("roomName"));
+                                            //    roomName.add(dataarray.getJSONObject(i).getString("roomName"));
                                             name.add(dataarray.getJSONObject(i).getString("name"));
                                             coursestatus.add(status);
 
@@ -170,7 +170,8 @@ public class CardShowClassFragment extends Fragment {
                                             //  Log.e("smsmsmsmsmsmsmsmsm",coursestatus.get(i)+"");
                                             dataList.add(new CardData(new SimpleDateFormat("yyyy年MM月dd日").format(new Date())
                                                     + "", name.get(i) + "", buildingName.get(i) + "-" + roomName.get(i),
-                                                    startTime.get(i) + "-" + endTime.get(i), timeId.get(i) + "", courseName.get(i) + "", coursestatus.get(i) + ""));
+                                                    startTime.get(i) + "-" + endTime.get(i), timeId.get(i) + "",
+                                                    courseName.get(i) + "", coursestatus.get(i) + ""));
                                         }
                                         Log.e("tag", dataList.toString() + "");
 

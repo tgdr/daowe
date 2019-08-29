@@ -3,6 +3,27 @@
     <!--<color name="colorPrimary">#008577</color>-->
     <!--<color name="colorPrimaryDark">#00574B</color>-->
     <!--<color name="colorAccent">#D81B60</color>-->
+    <color name="colorFloatingActionButton">#6633FF</color>
+    <color name="colorSplashBackground">#6633FF</color>
+    <color name="colorLogin">#6633FF</color>
+    <color name="colorLoginButton">#6633FF</color>
+    <color name="colorCursor">#cccccc</color>
+    <color name="head_color">#6633FF</color>
+    <color name="information_title_color">#666666</color>
+    <color name="list_bg_color">#FFF4F4F4</color>
+    <color name="list_focus_color">#bdbdbd</color>
+    <!-- Grey-->
+    <color name="grey_000">#FFFFFF</color>
+    <color name="grey_050">#FAFAFA</color>
+    <color name="grey_100">#F5F5F5</color>
+    <color name="grey_200">#EEEEEE</color>
+    <color name="grey_300">#E0E0E0</color>
+    <color name="grey_400">#BDBDBD</color>
+    <color name="grey_500">#9E9E9E</color>
+    <color name="grey_600">#757575</color>
+    <color name="grey_700">#616161</color>
+    <color name="grey_800">#424242</color>
+    <color name="grey_900">#212121</color>
 
 
     <color name="content_background">#f2f2f2</color>
@@ -18,7 +39,7 @@
 
     <!-- 下拉刷新时，颜色值 -->
     <color name="swiperefresh_color4">#ffaa66cc</color>
-
+    <color name="textColor">#cdcdcd</color>
     <!--  created by  fei -->
     <color name="text_secondary_color">#9d9d9d</color>
 

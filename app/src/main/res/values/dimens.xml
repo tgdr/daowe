@@ -11,4 +11,13 @@
 
     <dimen name="lay_12">12.0dip</dimen>
     <dimen name="lay_16">16.0dip</dimen>
+    <dimen name="fragment_top">60dp</dimen>
+    <dimen name="activity_margin_5">5dp</dimen>
+    <dimen name="activity_margin_10">10dp</dimen>
+    <dimen name="activity_margin_16">16dp</dimen>
+
+    <dimen name="text_size_14">14dp</dimen>
+    <dimen name="text_size_16">16dp</dimen>
+    <dimen name="text_size_18">18dp</dimen>
+    <dimen name="text_size_20">20dp</dimen>
 </resources>
