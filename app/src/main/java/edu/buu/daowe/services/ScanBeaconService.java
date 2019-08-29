@@ -33,6 +33,7 @@ import edu.buu.daowe.R;
 import edu.buu.daowe.Util.DateTimeUtil;
 import edu.buu.daowe.Util.ScanRecordUtil;
 import edu.buu.daowe.Util.SharedPreferenceUtil;
+import edu.buu.daowe.activity.CameraholidayActivity;
 import edu.buu.daowe.activity.LoginActivity;
 import edu.buu.daowe.activity.MainActivity;
 
@@ -238,6 +239,9 @@ public class ScanBeaconService extends Service {
                     if (scanResults != null) {
                         for (ScanResult result : scanResults) {
 
+//                            Intent myit = new Intent(getApplicationContext(), CameraholidayActivity.class);
+//                            myit.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                            startActivity(intent);
                             i++;
                             if(i % 10 == 0){
 //                        RxBus.getDefault().send(new Event());

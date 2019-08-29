@@ -7,7 +7,6 @@ import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -17,19 +16,16 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.zhy.http.okhttp.OkHttpUtils;
-import com.zhy.http.okhttp.callback.StringCallback;
+import com.baidubce.services.bos.BosClient;
+import com.baidubce.services.bos.model.ObjectMetadata;
+import com.baidubce.services.bos.model.PutObjectRequest;
 
-import org.json.JSONException;
+import java.io.ByteArrayInputStream;
 
 import edu.buu.daowe.DaoWeApplication;
 import edu.buu.daowe.R;
-import edu.buu.daowe.Util.Base64Util;
+import edu.buu.daowe.Util.BosUtils;
 import edu.buu.daowe.http.BaseRequest;
-import okhttp3.Call;
-import okhttp3.MediaType;
 
 public class CameraholidayActivity extends Activity {
     ImageView mIvScan;
@@ -189,85 +185,44 @@ public class CameraholidayActivity extends Activity {
                 camera.startPreview();
 
                 final Bitmap bm = BitmapFactory.decodeByteArray(data, 0, data.length);
+
                 //  iv.setImageBitmap(bm);
                 Toast.makeText(CameraholidayActivity.this, "拍照成功！", Toast.LENGTH_SHORT).show();
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         //    Log.e(TAG, Base64Util.encode(data));
+                        ObjectMetadata meta = new ObjectMetadata();
 
-                        OkHttpUtils.get().addHeader("Authorization", "Bearer " + app.getToken()).addHeader("Content-Type", "application/json")
-                                .url(BaseRequest.BASEURL + "tools/" + app.getStuid() + "/face").build().execute(new StringCallback() {
+                        // 自定义元数据
+                        meta.setContentType("image/jpeg");
+                        BosClient client = new BosClient(BosUtils.initBosClientConfiguration());    //创建BOSClient实例
+                        // 获取数据流
+                        // 以数据流形式上传Object
+                        ObjectMetadata objectMetadata = new ObjectMetadata();
+                        objectMetadata.setContentType("image/jpeg");
+                        PutObjectRequest request = new PutObjectRequest(BaseRequest.LEAVEREQ, app.getStuid() + "-" + System.currentTimeMillis() + ".jpg",
+                                new ByteArrayInputStream(data), objectMetadata);
+                        request.setObjectMetadata(objectMetadata);
+                        final String eTag = client.putObject(request).getETag();
+                        runOnUiThread(new Runnable() {
                             @Override
-                            public void onError(Call call, Exception e, int id) {
-                                // Log.e(TAG,e.toString());
-                            }
-
-                            @Override
-                            public void onResponse(String response, int id) {
-
-                                try {
-                                    org.json.JSONObject mydata = new org.json.JSONObject(response);
-                                    if (mydata.getInt("code") == 200) {
-                                        String md = mydata.getString("data");
-                                        // Log.e(TAG,md);
-                                        String facetoken = new org.json.JSONObject(md).getString("faceToken");
-                                        String accesstoken = new org.json.JSONObject(md).getString("accessToken");
-                                        JSONArray array = new JSONArray();
-                                        JSONObject data1 = new JSONObject();
-                                        data1.put("image", Base64Util.encode(data));
-                                        data1.put("image_type", "BASE64");
-                                        data1.put("quality_control", "NONE");
-                                        data1.put("face_type", "LIVE");
-                                        data1.put("liveness_control", "NORMAL");
-
-
-                                        JSONObject data2 = new JSONObject();
-                                        data2.put("image_type", "URL" +
-                                                "");
-                                        data2.put("image", facetoken);
-                                        //   data2.put("face_field", "faceshape,facetype");
-
-                                        data2.put("quality_control", "NONE");
-                                        data2.put("face_type", "LIVE");
-                                        data2.put("liveness_control", "NONE");
-                                        array.add(data1);
-                                        array.add(data2);
-
-                                        OkHttpUtils.postString().content(array.toJSONString()).mediaType(MediaType.parse("application/json; charset=utf-8"))
-                                                .url("https://aip.baidubce.com/rest/2.0/face/v3/match?access_token=" + accesstoken).build().execute(new StringCallback() {
-                                            @Override
-                                            public void onError(Call call, Exception e, int id) {
-                                                Log.e(TAG, e.toString());
-                                            }
-
-                                            @Override
-                                            public void onResponse(final String response, int id) {
-                                                Log.e(TAG, response);
-                                                try {
-                                                    org.json.JSONObject result = new org.json.JSONObject(response);
-                                                    if (result.getInt("error_code") == 0) {
-                                                        result = new org.json.JSONObject(result.getString("result"));
-                                                        final double score = result.getDouble("score");
-
-                                                        runOnUiThread(new Runnable() {
-                                                            @Override
-                                                            public void run() {
-                                                                Toast.makeText(CameraholidayActivity.this, score + "", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        });
-                                                    }
-                                                } catch (JSONException e) {
-                                                    e.printStackTrace();
-                                                }
-                                            }
-                                        });
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
+                            public void run() {
+                                Toast.makeText(CameraholidayActivity.this, eTag, Toast.LENGTH_SHORT).show();
                             }
                         });
+//                        OkHttpUtils.get().addHeader("Authorization", "Bearer " + app.getToken()).addHeader("Content-Type", "application/json")
+//                                .url(BaseRequest.BASEURL + "tools/" + app.getStuid() + "/face").build().execute(new StringCallback() {
+//                            @Override
+//                            public void onError(Call call, Exception e, int id) {
+//                                // Log.e(TAG,e.toString());
+//                            }
+//
+//                            @Override
+//                            public void onResponse(String response, int id) {
+//
+//                            }
+//                        });
                     }
                 }).start();
 
