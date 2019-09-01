@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity
         bottom_menu_qz = findViewById(R.id.menu_message);
 
         initBottomNavigation();
-        shouguide();
+
         initData();
 
 //        FloatingActionButton fab = findViewById(R.id.fab);
@@ -202,7 +202,7 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
-
+        shouguide();
     }
 
     private void initData() {
@@ -254,7 +254,7 @@ public class MainActivity extends AppCompatActivity
         // 初始化展示MessageFragment
         mybar.setVisibility(View.VISIBLE);
         toolbar.setVisibility(View.VISIBLE);
-        setFragmentPosition(3);
+        setFragmentPosition(5);
     }
 
     private void initBottomNavigation() {
@@ -646,6 +646,7 @@ public class MainActivity extends AppCompatActivity
         //guideHelper.addPage(tipData1);
 
         guideHelper.show(false);
+
     }
 
 }
