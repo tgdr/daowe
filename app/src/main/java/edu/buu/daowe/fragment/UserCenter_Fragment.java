@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
@@ -95,11 +96,11 @@ public class UserCenter_Fragment extends Fragment {
                         mSex.setRightDesc(userinfo.getString("sex"));
                         //设置背景磨砂效果
                         Glide.with(getActivity()).load(userinfo.getString("avatar"))
-                                .bitmapTransform(new BlurTransformation(getActivity(), 25), new CenterCrop(getActivity()))
+                                .bitmapTransform(new BlurTransformation(getActivity(), 25), new CenterCrop(getActivity())).diskCacheStrategy(DiskCacheStrategy.NONE)
                                 .into(mHBack);
                         //设置圆形图像
                         Glide.with(getActivity()).load(userinfo.getString("avatar"))
-                                .bitmapTransform(new CropCircleTransformation(getActivity()))
+                                .bitmapTransform(new CropCircleTransformation(getActivity())).diskCacheStrategy(DiskCacheStrategy.NONE)
                                 .into(mHHead);
                         userinfo = userinfo.getJSONObject("data");
                         mNickName.setRightDesc(userinfo.getString("college"));
@@ -214,6 +215,18 @@ public class UserCenter_Fragment extends Fragment {
                                     }
                                 }).setNegativeButton("取消", null).setCancelable(false).create().show();
 
+            }
+        });
+        mPhone.setItemClickListener(new ItemView.itemClickListener() {
+            @Override
+            public void itemClick(String text) {
+                Toast.makeText(getActivity(), "请联系作者985094108@qq.com修改", Toast.LENGTH_SHORT).show();
+            }
+        });
+        mPass.setItemClickListener(new ItemView.itemClickListener() {
+            @Override
+            public void itemClick(String text) {
+                Toast.makeText(getActivity(), "即将推出", Toast.LENGTH_SHORT).show();
             }
         });
     }

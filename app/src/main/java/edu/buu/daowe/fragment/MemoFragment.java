@@ -77,6 +77,7 @@ public class MemoFragment extends Fragment
         super.onViewCreated(view, savedInstanceState);
         app = (DaoWeApplication) getActivity().getApplication();
         if (getArguments() != null) {
+            Log.e(getArguments().toString(), getArguments().toString());
             markdata = getArguments().getInt("mark");
             Log.e("mymark", markdata + "");
         }
@@ -259,7 +260,7 @@ public class MemoFragment extends Fragment
         mNoteListAdapter.setmNotes(noteList);
         refreshNoteList(markdata);
         rv_list_main.setAdapter(mNoteListAdapter);
-        Log.e("marmarmarmardata", markdata + "");
+
 
 
         //RecyclerViewItem单击事件
@@ -305,7 +306,7 @@ public class MemoFragment extends Fragment
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
-        Log.e("smsmsmsmsmsmsmsmsmsmsmsm", "666" + hidden);
+        //     Log.e("smsmsmsmsmsmsmsmsmsmsmsm", "666" + hidden);
     }
 
     @Override
@@ -316,14 +317,14 @@ public class MemoFragment extends Fragment
         if (isVisibleToUser) {
 
             //相当于Fragment的onResume，为true时，Fragment已经可见 
-            Log.e("tagtag", "tttttttttttt");
+            //     Log.e("tagtag", "tttttttttttt");
 
             refreshNoteList(0);
             getFragmentManager().beginTransaction().remove(this).add(new MemoFragment(), "s").commit();
         } else {
             //相当于Fragment的onPause，为false时，Fragment不可见
 
-            Log.e("tagtag", "ooooooooooo");
+            //   Log.e("tagtag", "ooooooooooo");
         }
 
     }

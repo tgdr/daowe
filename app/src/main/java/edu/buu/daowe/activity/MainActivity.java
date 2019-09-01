@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.internal.BottomNavigationItemView;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
@@ -25,6 +26,7 @@ import android.text.SpannableString;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,6 +38,8 @@ import com.baidubce.services.bos.BosClient;
 import com.baidubce.services.bos.callback.BosProgressCallback;
 import com.baidubce.services.bos.model.ObjectMetadata;
 import com.baidubce.services.bos.model.PutObjectRequest;
+import com.shizhefei.guide.GuideHelper;
+import com.shizhefei.guide.GuideHelper.TipData;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.BitmapCallback;
 import com.zhy.http.okhttp.callback.StringCallback;
@@ -61,6 +65,7 @@ import edu.buu.daowe.fragment.CardShowClassFragment;
 import edu.buu.daowe.fragment.CheckInFragment;
 import edu.buu.daowe.fragment.MemoFragment;
 import edu.buu.daowe.fragment.SchooClalendarFragment;
+import edu.buu.daowe.fragment.Three_Fragment;
 import edu.buu.daowe.fragment.UserCenter_Fragment;
 import edu.buu.daowe.http.BaseRequest;
 import okhttp3.Call;
@@ -77,7 +82,7 @@ public class MainActivity extends AppCompatActivity
     private int nav_selected;
     long mBackPressed;
     private Menu menuNav;
-    FragmentTransaction transaction;
+
     TextView tvusername, tvsign;
     ImageView img, imguserphoto;
     DaoWeApplication app;
@@ -91,6 +96,7 @@ public class MainActivity extends AppCompatActivity
     private int lastIndex;
     List<Fragment> mFragments;
     Toolbar toolbar;
+    BottomNavigationItemView bottom_menu_kcb, bottom_menu_xl, bottom_menu_qz;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,8 +114,14 @@ public class MainActivity extends AppCompatActivity
         mybar.setVisibility(View.VISIBLE);
         toolbar.setVisibility(View.VISIBLE);
         noteDao = new NoteDao(this);
+        bottom_menu_kcb = findViewById(R.id.menu_classtable);
+        bottom_menu_xl = findViewById(R.id.menu_calendar);
+        bottom_menu_qz = findViewById(R.id.menu_message);
+
         initBottomNavigation();
+        shouguide();
         initData();
+
 //        FloatingActionButton fab = findViewById(R.id.fab);
 //        fab.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -197,19 +209,52 @@ public class MainActivity extends AppCompatActivity
 
         //setSupportActionBar(mToolbar);
         mFragments = new ArrayList<>();
-        mFragments.add(new CardShowClassFragment());
-        mFragments.add(new CheckInFragment());
+//添加全部备忘录的fragment
+        synchronized (mFragments) {    //同步锁：同步监听对象/ 同步监听器 /互斥锁
+
+
+            Bundle bundleall = new Bundle();
+            bundleall.putInt("mark", 3);
+            MemoFragment alldatafg = new MemoFragment();
+            alldatafg.setArguments(bundleall);
+            mFragments.add(alldatafg);
+
+            //添加已完成的备忘录
+            Bundle bundlefinished = new Bundle();
+            bundlefinished.putInt("mark", 1);
+            MemoFragment finishdatafg = new MemoFragment();
+            finishdatafg.setArguments(bundlefinished);
+            mFragments.add(finishdatafg);
+
+            //添加未完成的备忘录
+            Bundle bundleunfinished = new Bundle();
+            bundleunfinished.putInt("mark", 0);
+            MemoFragment unfinishdatafg = new MemoFragment();
+            unfinishdatafg.setArguments(bundleunfinished);
+            mFragments.add(unfinishdatafg);
+        }
+
+
+        mFragments.add(new Three_Fragment());
         mFragments.add(new SchooClalendarFragment());
+
+        mFragments.add(new CardShowClassFragment());
         mFragments.add(new UserCenter_Fragment());
 
+
         mFragments.add(new CheckInFragment());
-        mFragments.add(new MemoFragment());
+
+
+        mFragments.add(new CheckInFragment());
+
+
+
         // mFragments.add(new CancellationFragment());
         // mFragments.add(new AccountFragment());
         // 初始化展示MessageFragment
         mybar.setVisibility(View.VISIBLE);
         toolbar.setVisibility(View.VISIBLE);
-        setFragmentPosition(0);
+        setFragmentPosition(3);
     }
 
     private void initBottomNavigation() {
@@ -224,25 +269,25 @@ public class MainActivity extends AppCompatActivity
                     case R.id.menu_message:
                         mybar.setVisibility(View.VISIBLE);
                         toolbar.setVisibility(View.VISIBLE);
-                        setFragmentPosition(0);
-                        setTitle("今日课表");
+                        setFragmentPosition(3);
+                        setTitle("朋友圈");
                         break;
-                    case R.id.menu_contacts:
+                    case R.id.menu_calendar:
                         mybar.setVisibility(View.VISIBLE);
                         toolbar.setVisibility(View.VISIBLE);
-                        setFragmentPosition(1);
-                        setTitle("签到");
-                        break;
-                    case R.id.menu_discover:
-                        mybar.setVisibility(View.VISIBLE);
-                        toolbar.setVisibility(View.VISIBLE);
-                        setFragmentPosition(2);
+                        setFragmentPosition(4);
                         setTitle("校历");
+                        break;
+                    case R.id.menu_classtable:
+                        mybar.setVisibility(View.VISIBLE);
+                        toolbar.setVisibility(View.VISIBLE);
+                        setFragmentPosition(5);
+                        setTitle("今日课表");
                         break;
                     case R.id.menu_me:
                         mybar.setVisibility(View.GONE);
                         toolbar.setVisibility(View.GONE);
-                        setFragmentPosition(3);
+                        setFragmentPosition(6);
                         setTitle("个人中心");
                         break;
                     default:
@@ -254,18 +299,6 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private void setFragmentPositionWithData(int data) {
-        transaction = fragmanager.beginTransaction();
-        MemoFragment memoFragment = new MemoFragment();
-        Bundle bundle = new Bundle();
-        bundle.putInt("mark", data);
-        memoFragment.setArguments(bundle);
-        transaction.hide(mFragments.get(lastIndex)).replace(R.id.main_frame, memoFragment);
-        transaction.show(memoFragment);
-        transaction.commit();
-
-
-    }
 
     private void setFragmentPosition(int position) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -375,24 +408,24 @@ public class MainActivity extends AppCompatActivity
             nav_selected = 3;
             refreshNoteList(app.getStuid(), nav_selected);
 
-            setFragmentPositionWithData(3);
+            setFragmentPosition(0);
 
 
             // setFragmentPosition(5);
-            setTitle("备忘录");
+            setTitle("备忘录——全部");
 
         } else if (id == R.id.nav_finish) {
             nav_selected = 1;
             refreshNoteList(app.getStuid(), nav_selected);
-            setFragmentPositionWithData(1);
-            setTitle("备忘录");
+            setFragmentPosition(1);
+            setTitle("备忘录——已完成");
 
         } else if (id == R.id.nav_unfinish) {
             nav_selected = 0;
             refreshNoteList(app.getStuid(), nav_selected);
 
-            setFragmentPositionWithData(0);
-            setTitle("备忘录");
+            setFragmentPosition(2);
+            setTitle("备忘录——未完成");
 
         }
 
@@ -586,6 +619,33 @@ public class MainActivity extends AppCompatActivity
             setCount();
         }
 
+    }
+
+
+    public void shouguide() {
+        final GuideHelper guideHelper = new GuideHelper(MainActivity.this);
+
+        TipData tipData1 = new TipData(R.mipmap.guide_kcb, Gravity.LEFT | Gravity.TOP, (View) bottom_menu_kcb);
+        tipData1.setLocation(bottom_menu_kcb.getWidth() + 15, bottom_menu_kcb.getHeight());
+        TipData tipData2 = new TipData(R.mipmap.guide_xl, Gravity.CENTER | Gravity.TOP, (View) bottom_menu_xl);
+        tipData2.setLocation(bottom_menu_kcb.getWidth() + 60, bottom_menu_xl.getHeight());
+        TipData tipData3 = new TipData(R.mipmap.guide_pyq, Gravity.CENTER | Gravity.TOP, (View) bottom_menu_qz);
+        // tipData3.setLocation(bottom_menu_kcb.getWidth()+80, bottom_menu_qz.getHeight());
+
+        guideHelper.addPage(tipData1);
+        guideHelper.addPage(tipData2);
+        guideHelper.addPage(tipData3);
+
+
+        tipData1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                guideHelper.nextPage();
+            }
+        });
+        //guideHelper.addPage(tipData1);
+
+        guideHelper.show(false);
     }
 
 }

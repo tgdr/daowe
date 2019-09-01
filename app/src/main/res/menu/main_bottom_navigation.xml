@@ -2,27 +2,28 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/menu_message"
+        android:id="@+id/menu_classtable"
         android:enabled="true"
-        android:icon="@mipmap/message"
+        android:icon="@drawable/ic_bottom_schedule"
         app:showAsAction="ifRoom"
-        android:title="消息" />
+        android:title="课程表" />
+
     <item
-        android:id="@+id/menu_contacts"
+        android:id="@+id/menu_calendar"
         android:enabled="true"
-        android:icon="@mipmap/icon_contacts"
-        app:showAsAction="ifRoom"
-        android:title="联系人" />
-    <item
-        android:id="@+id/menu_discover"
-        android:enabled="true"
-        android:icon="@mipmap/icon_discover"
+        android:icon="@drawable/ic_bottom_calendar"
         app:showAsAction="ifRoom"
         android:title="校历" />
+    <item
+        android:id="@+id/menu_message"
+        android:enabled="true"
+        android:icon="@drawable/ic_bottom_moment"
+        app:showAsAction="ifRoom"
+        android:title="圈子" />
     <item
         android:id="@+id/menu_me"
         android:enabled="true"
         app:showAsAction="ifRoom"
-        android:icon="@mipmap/me"
+        android:icon="@drawable/ic_bottom_myself"
         android:title="我" />
 </menu>
