@@ -153,7 +153,7 @@ public class CardShowClassFragment extends Fragment {
                                             timeId.add(dataarray.getJSONObject(i).getString("timeId"));
                                             courseName.add(dataarray.getJSONObject(i).getString("courseName"));
                                             buildingName.add(dataarray.getJSONObject(i).getString("buildingName"));
-                                            courseName.add(dataarray.getJSONObject(i).getString("courseName"));
+                                        //    courseName.add(dataarray.getJSONObject(i).getString("courseName"));
                                             roomName.add(dataarray.getJSONObject(i).getInt("floorsMajor") + "0" + dataarray.getJSONObject(i).getInt("roomMinor"));
                                             startTime.add(dataarray.getJSONObject(i).getString("startTime"));
                                             endTime.add(dataarray.getJSONObject(i).getString("endTime"));

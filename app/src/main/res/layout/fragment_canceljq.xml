@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="15dp"
+    android:orientation="vertical">
+
+    <TextView
+
+        android:layout_marginTop="@dimen/fragment_top"
+        android:id="@+id/tv_select_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="选择请假日期"
+        android:textSize="30dp"
+
+        />
+
+
+    <LinearLayout
+        android:layout_marginTop="15dp"
+        android:layout_width="match_parent"
+
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="第"
+            android:textSize="15dp"/>
+        <Spinner
+            android:theme="@style/itemSpinnerStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/selectqjkc"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="节至第"
+            android:textSize="15dp"/>
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:theme="@style/itemSpinnerStyle"
+            android:entries="@array/selectqjkc"/><TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="节"
+        android:textSize="15dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="类型"
+            android:textSize="15dp"/>
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:theme="@style/itemSpinnerStyle"
+            android:entries="@array/selectqjtype"/><TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:textSize="15dp"/>
+
+
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="请假事由:"
+        android:textSize="18dp"
+        />
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <EditText
+            android:id="@+id/et_reason"
+            android:maxLength="60"
+            android:textSize="16dp"
+            android:padding="10dp"
+            android:background="@drawable/bg_reason_input"
+            android:hint="请在这里说明请假的原因"
+            android:gravity="top"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"/>
+    </LinearLayout>
+
+
+        <TextView
+
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="点击上传请假凭证"
+            />
+        <ImageView
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="10dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/ic_uploadfile"/>
+
+    <Button
+        android:id="@+id/bt_login_submit"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+
+        android:layout_marginTop="15dp"
+
+        android:background="@drawable/bg_leave_submit"
+        android:elevation="0dp"
+        android:outlineProvider="none"
+        android:text="提交申请"
+        android:textColor="@color/white"
+        android:textSize="@dimen/font_18"
+        tools:targetApi="lollipop" />
+
+</LinearLayout>

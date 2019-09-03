@@ -40,6 +40,11 @@
         <attr name="sriv_oval" format="boolean" />
         <attr name="android:scaleType" />
     </declare-styleable>
+    <style name="itemSpinnerStyle" parent="@android:style/Widget.TextView.SpinnerItem">
+
+        <item name="android:textSize">15dp</item>
+
+    </style>
 
 
 </resources>

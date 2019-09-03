@@ -61,6 +61,7 @@ import edu.buu.daowe.R;
 import edu.buu.daowe.Util.BosUtils;
 import edu.buu.daowe.Util.BottomNavigationViewHelper;
 import edu.buu.daowe.dialogue.ModifyPhotoBottomDialog;
+import edu.buu.daowe.fragment.ApplicateFragment;
 import edu.buu.daowe.fragment.CardShowClassFragment;
 import edu.buu.daowe.fragment.CheckInFragment;
 import edu.buu.daowe.fragment.MemoFragment;
@@ -202,7 +203,12 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
-        shouguide();
+        if(app.getSpf().getString("guide","") !=null &&app.getSpf().getString("guide","").equals("finished")){
+
+        }else{
+            shouguide();
+            app.getEditor().putString("guide","finished").commit();
+        }
     }
 
     private void initData() {
@@ -246,6 +252,7 @@ public class MainActivity extends AppCompatActivity
 
 
         mFragments.add(new CheckInFragment());
+        mFragments.add(new ApplicateFragment());
 
 
 
@@ -427,6 +434,10 @@ public class MainActivity extends AppCompatActivity
             setFragmentPosition(2);
             setTitle("备忘录——未完成");
 
+        }
+        else if (id == R.id.nav_appjq){
+            setTitle("请假");
+            setFragmentPosition(9);
         }
 
 
