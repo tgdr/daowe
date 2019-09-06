@@ -83,7 +83,7 @@ public class CardShowClassFragment extends Fragment {
                 Map.Entry temp = it.next();
                 String key = (String) temp.getKey() + "";
                 String value = (String) temp.getValue() + "";
-                Log.e(key, value);
+                //  Log.e(key, value);
             }
         }
         return super.onOptionsItemSelected(item);

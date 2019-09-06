@@ -123,7 +123,7 @@ public class SchooClalendarFragment extends BaseFragment implements
 
             @Override
             public void onResponse(String response, int id) {
-                Log.e("dadadadadada", response);
+                //  Log.e("dadadadadada", response);
                 JSONArray datalist;
                 datalist = new JSONArray();
                 try {
@@ -135,7 +135,7 @@ public class SchooClalendarFragment extends BaseFragment implements
                             int weekNumber = datalist.getJSONObject(i).getInt("weekNumber");
                             LocalDateTime startTime = MyTimeUtils.getDateTimeOfTimestamp(datalist.getJSONObject(i).getLong("startTime"));
                             LocalDateTime endTime = MyTimeUtils.getDateTimeOfTimestamp(datalist.getJSONObject(i).getLong("endTime"));
-                            Log.e("dddddddd", startTime.getDayOfYear() + " end" + endTime.getDayOfYear());
+                            //   Log.e("dddddddd", startTime.getDayOfYear() + " end" + endTime.getDayOfYear());
                             int starttime = startTime.getDayOfYear();
                             int endtime = endTime.getDayOfYear();
                             int colorindex = 0;
@@ -156,7 +156,7 @@ public class SchooClalendarFragment extends BaseFragment implements
 
                             //     Log.e("startmonth:"+(dt.getMonthValue()),"startday:"+(dt.getDayOfMonth()));
                             //    Log.e("endmonth:"+(enddate.getMonth()),"endday:"+(enddate.getDay()+1));
-                            Log.e("weeknum", weekNumber + "");
+                            //     Log.e("weeknum", weekNumber + "");
                             //Log.e("s",endTime+"");
 //                                                           while (startday<endday && startmonth<endmonth){
 //                                                               map.put(getSchemeCalendar(year, startmonth, startday, 0xFF40db25, "第"+weekNumber+"周").toString(),
@@ -267,10 +267,10 @@ public class SchooClalendarFragment extends BaseFragment implements
         mYear = calendar.getYear();
 
 
-        Log.e("onDateSelected", "  -- " + calendar.getYear() +
-                "  --  " + calendar.getMonth() +
-                "  -- " + calendar.getDay() +
-                "  --  " + isClick + "  --   " + calendar.getScheme());
+//        Log.e("onDateSelected", "  -- " + calendar.getYear() +
+//                "  --  " + calendar.getMonth() +
+//                "  -- " + calendar.getDay() +
+//                "  --  " + isClick + "  --   " + calendar.getScheme());
     }
 
     @Override

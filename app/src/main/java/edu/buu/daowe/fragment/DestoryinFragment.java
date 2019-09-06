@@ -55,8 +55,8 @@ public class DestoryinFragment extends Fragment {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Log.e("urlurl", BaseRequest.BASEURL + "users/"
-                        + app.getStuid() + "/leave/");
+                //  Log.e("urlurl", BaseRequest.BASEURL + "users/"
+                //          + app.getStuid() + "/leave/");
                 OkHttpUtils.get().addHeader("Authorization", "Bearer " + app.getToken()).url(BaseRequest.BASEURL + "users/"
                         + app.getStuid() + "/leave/").build().execute(new StringCallback() {
                     @Override
@@ -68,7 +68,7 @@ public class DestoryinFragment extends Fragment {
                     public void onResponse(String response, int id) {
                         try {
                             JSONObject getres = new JSONObject(response);
-                            Log.e("tagtag", response);
+                            //     Log.e("tagtag", response);
                             if (getres.getInt("code") == 200) {
                                 JSONArray datalist = getres.getJSONArray("data");
                                 if (datalist.length() > 0) {

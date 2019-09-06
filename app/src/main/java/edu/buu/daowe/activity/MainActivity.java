@@ -376,6 +376,7 @@ public class MainActivity extends AppCompatActivity
 //            transaction.replace(R.id.main_frame,new CancellationFragment()).commit();
             mybar.setVisibility(View.VISIBLE);
             toolbar.setVisibility(View.VISIBLE);
+            setTitle("查看请假记录");
             setFragmentPosition(10);
 
 
@@ -405,6 +406,8 @@ public class MainActivity extends AppCompatActivity
 
 
         } else if (id == R.id.nav_all) {
+            mybar.setVisibility(View.VISIBLE);
+            toolbar.setVisibility(View.VISIBLE);
             nav_selected = 3;
             refreshNoteList(app.getStuid(), nav_selected);
 
@@ -415,6 +418,8 @@ public class MainActivity extends AppCompatActivity
             setTitle("备忘录——全部");
 
         } else if (id == R.id.nav_finish) {
+            mybar.setVisibility(View.VISIBLE);
+            toolbar.setVisibility(View.VISIBLE);
             nav_selected = 1;
             refreshNoteList(app.getStuid(), nav_selected);
             setFragmentPosition(1);
@@ -429,6 +434,8 @@ public class MainActivity extends AppCompatActivity
 
         }
         else if (id == R.id.nav_appjq){
+            mybar.setVisibility(View.VISIBLE);
+            toolbar.setVisibility(View.VISIBLE);
             setTitle("请假");
             setFragmentPosition(9);
         }

@@ -41,7 +41,7 @@ import edu.buu.daowe.http.BaseRequest;
 import okhttp3.Call;
 
 /**
- * Created by elimy on 2016-12-26.
+ * Created by lty on 2019-09-06.
  */
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.CardViewHolder> {
     private Context context;
@@ -119,7 +119,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                                     public void run() {
                                         final String requrl = BaseRequest.BASEURL + "users/sign?buildingUuid=" + result[0] +
                                                 "&floorsMajor=" + result[1] + "&id=" + app.getStuid() + "&roomMinor=" + result[2] + "&timeId=" + timeid;
-                                        Log.e("urlurlurl", requrl);
+                                        //     Log.e("urlurlurl", requrl);
                                         OkHttpUtils.get().addHeader("Authorization", "Bearer " + app.getToken())
                                                 // .addParams("buildingUuid",result[0])
                                                 // .addParams("timeId",msg.arg1+"")
@@ -136,6 +136,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
                                                     @Override
                                                     public void onResponse(String response, int id) {
+                                                        Log.e("rererere", response);
                                                         try {
                                                             JSONObject getres = new JSONObject(response);
                                                             if (getres.getInt("code") == 200) {

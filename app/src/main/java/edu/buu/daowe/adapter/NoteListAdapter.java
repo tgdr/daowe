@@ -20,7 +20,7 @@ import static edu.buu.daowe.R.id;
 
 
 /**
- * Created by 1U02UN on 2017/5/17.
+ * Created by lty on 2019/9/06.
  * RecyclerView适配器
  */
 
