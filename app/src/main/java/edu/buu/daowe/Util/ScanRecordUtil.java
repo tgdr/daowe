@@ -1,7 +1,6 @@
 package edu.buu.daowe.Util;
 
 import android.bluetooth.le.ScanRecord;
-import android.net.wifi.ScanResult;
 import android.os.ParcelUuid;
 import android.support.annotation.Nullable;
 import android.util.ArrayMap;
@@ -23,7 +22,7 @@ import java.util.UUID;
 
 public class ScanRecordUtil {
 
-
+    //  static  final int startByte = 5;
     /**
      * Returns a string composed from a {@link SparseArray}.
      */
@@ -391,6 +390,7 @@ public class ScanRecordUtil {
         // 转换为16进制
         final int startByte = 5;
         byte[] uuidBytes = new byte[16];
+        // Log.e("eeeeee",scanRecord.toString()+"");
         System.arraycopy(scanRecord, startByte + 4, uuidBytes, 0, 16);
         String hexString = bytesToHex(uuidBytes);
 
@@ -417,6 +417,41 @@ public class ScanRecordUtil {
 
 
     }
+
+    public static String[] getScanResult(byte[] scanRecord) {
+        String[] scanresult = new String[3];
+        // 转换为16进制
+        final int startByte = 5;
+        byte[] uuidBytes = new byte[16];
+        // Log.e("eeeeee",scanRecord.toString()+"");
+        System.arraycopy(scanRecord, startByte + 4, uuidBytes, 0, 16);
+        String hexString = bytesToHex(uuidBytes);
+
+        // ibeacon的UUID值
+        String uuid = hexString.substring(0, 8) + "-"
+                + hexString.substring(8, 12) + "-"
+                + hexString.substring(12, 16) + "-"
+                + hexString.substring(16, 20) + "-"
+                + hexString.substring(20, 32);
+        scanresult[0] = uuid;
+        // ibeacon的Major值
+        int major = (scanRecord[startByte + 20] & 0xff) * 0x100
+                + (scanRecord[startByte + 21] & 0xff);
+        scanresult[1] = String.valueOf(major);
+        // ibeacon的Minor值
+        int minor = (scanRecord[startByte + 22] & 0xff) * 0x100
+                + (scanRecord[startByte + 23] & 0xff);
+        scanresult[2] = String.valueOf(minor);
+
+        int txPower = (scanRecord[startByte + 24]);
+        Log.e("BLE", bytesToHex(scanRecord));
+        Log.e("BLE",
+                " \nUUID：" + uuid + "\nMajor：" + major + "\nMinor："
+                        + minor + "\nTxPower：" + txPower);
+        return scanresult;
+
+    }
+
 
     public static final ParcelUuid BASE_UUID =
             ParcelUuid.fromString("00000000-0000-1000-8000-00805F9B34FB");

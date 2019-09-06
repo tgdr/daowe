@@ -100,6 +100,8 @@ public class CardShowClassFragment extends Fragment {
         final ArrayList endTime = new ArrayList();
         final ArrayList name = new ArrayList();
         final ArrayList coursestatus = new ArrayList();
+        final ArrayList major = new ArrayList();
+        final ArrayList minor = new ArrayList();
 
         new Thread(new Runnable() {
             @Override
@@ -159,6 +161,10 @@ public class CardShowClassFragment extends Fragment {
                                             endTime.add(dataarray.getJSONObject(i).getString("endTime"));
                                             //    roomName.add(dataarray.getJSONObject(i).getString("roomName"));
                                             name.add(dataarray.getJSONObject(i).getString("name"));
+
+                                            major.add(dataarray.getJSONObject(i).getInt("floorsMajor"));
+                                            minor.add(dataarray.getJSONObject(i).getInt("roomMinor"));
+
                                             coursestatus.add(status);
 
                                         }
@@ -177,12 +183,13 @@ public class CardShowClassFragment extends Fragment {
 
 
                                         RecyclerView.LayoutManager linearManager = new LinearLayoutManager(getActivity());
-                                        mAdapter = new RecyclerViewAdapter(getActivity(), dataList);
+                                        mAdapter = new RecyclerViewAdapter(getActivity(), dataList, major, minor, app);
 
                                         //设置Adapter
                                         recyclerView.setAdapter(mAdapter);
                                         //设置布局类型为线性布局
                                         recyclerView.setLayoutManager(linearManager);
+
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -193,6 +200,7 @@ public class CardShowClassFragment extends Fragment {
                 });
             }
         }).start();
+
     }
 
 

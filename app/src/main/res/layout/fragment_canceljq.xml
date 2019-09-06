@@ -31,6 +31,7 @@
             android:text="第"
             android:textSize="15dp"/>
         <Spinner
+            android:id="@+id/startsp"
             android:theme="@style/itemSpinnerStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -41,6 +42,7 @@
             android:text="节至第"
             android:textSize="15dp"/>
         <Spinner
+            android:id="@+id/endsp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:theme="@style/itemSpinnerStyle"
@@ -55,6 +57,8 @@
             android:text="类型"
             android:textSize="15dp"/>
         <Spinner
+
+            android:id="@+id/typeid"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:theme="@style/itemSpinnerStyle"
@@ -93,21 +97,24 @@
 
 
         <TextView
-
+            android:id="@+id/tv_hintzp"
             android:layout_marginTop="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="点击上传请假凭证"
+            android:visibility="invisible"
             />
         <ImageView
+            android:id="@+id/img_upload"
             android:layout_marginLeft="15dp"
             android:layout_marginTop="10dp"
             android:layout_width="80dp"
             android:layout_height="80dp"
+            android:visibility="invisible"
             android:src="@drawable/ic_uploadfile"/>
 
     <Button
-        android:id="@+id/bt_login_submit"
+        android:id="@+id/bt_submit"
         android:layout_width="match_parent"
         android:layout_height="48dp"
 

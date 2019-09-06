@@ -43,6 +43,7 @@
                 android:layout_height="wrap_content"
                 android:layout_toLeftOf="@id/user_line"
                 android:text="N/A"
+
                 android:textColor="@android:color/black"
                 android:textSize="17sp" />
 
@@ -52,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
                 android:layout_toRightOf="@id/user_line"
-                android:text="182****5882"
+                android:text="N/A"
                 android:textColor="@android:color/black"
                 android:textSize="17sp" />
         </RelativeLayout>
@@ -81,7 +82,7 @@
         android:layout_height="50dp"
         app:left_icon="@drawable/ic_sex"
         app:left_text="性别"
-        app:right_text="男" />
+        app:right_text="unknown" />
 
     <edu.buu.daowe.defui.ItemView
         android:id="@+id/signName"
@@ -89,7 +90,7 @@
         android:layout_height="50dp"
         app:left_icon="@drawable/ic_sign_name"
         app:left_text="个性签名"
-        app:right_text="风一样的男子" />
+        app:right_text="n/a" />
 
     <edu.buu.daowe.defui.ItemView
         android:id="@+id/pass"

@@ -2,11 +2,16 @@ package edu.buu.daowe.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.view.menu.MenuPopupHelper;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,13 +21,24 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.buu.daowe.DaoWeApplication;
 import edu.buu.daowe.R;
+import edu.buu.daowe.Util.BTUtils;
+import edu.buu.daowe.activity.CameraSignInActivity;
 import edu.buu.daowe.defui.SelectableRoundedImageView;
+import edu.buu.daowe.http.BaseRequest;
+import okhttp3.Call;
 
 /**
  * Created by elimy on 2016-12-26.
@@ -32,7 +48,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     Map piliangdata;
     private ArrayList<CardData> datalist;
     View view;
-
+    ArrayList marjor, minor;
+    Handler handler, handlerphoto;
+    DaoWeApplication app;
     public RecyclerViewAdapter() {
 
 
@@ -43,9 +61,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     /*
      * 带参构造函数，传入上下文和需要绑定的数据集合
      * */
-    public RecyclerViewAdapter(Context cx, ArrayList datalist) {
+    public RecyclerViewAdapter(Context cx, ArrayList datalist, ArrayList major, ArrayList minor, DaoWeApplication app) {
         this.context = cx;
         this.datalist = datalist;
+        this.marjor = major;
+        this.minor = minor;
+        this.app = app;
     }
 
 
@@ -76,7 +97,84 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         //将view中的view和数据集绑定
         //  holder.cardImage.setImageResource(datalist.get(position).ge);
+        handler = new Handler() {
+            @Override
+            public void handleMessage(final Message msg) {
+                super.handleMessage(msg);
+                synchronized (msg) {
+                    if (msg.what == 0x521) {
+                        if (msg.obj == null) {
+                            Toast.makeText(context, "当前未在所选教室中，请你看看是不是走错房间了！", Toast.LENGTH_SHORT).show();
+                        } else {
+                            final String[] result = (String[]) msg.obj;
+                            // Log.e("mmmmmmmmmmmmmm",result.toString());
 
+                            double distanceforclassroom = Double.parseDouble(result[3]);
+                            final int timeid = msg.arg2;
+                            if (distanceforclassroom > 10) {
+                                Toast.makeText(context, "当前距离教室" + distanceforclassroom + "m不能发起签到请求", Toast.LENGTH_SHORT).show();
+                            } else {
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        final String requrl = BaseRequest.BASEURL + "users/sign?buildingUuid=" + result[0] +
+                                                "&floorsMajor=" + result[1] + "&id=" + app.getStuid() + "&roomMinor=" + result[2] + "&timeId=" + timeid;
+                                        Log.e("urlurlurl", requrl);
+                                        OkHttpUtils.get().addHeader("Authorization", "Bearer " + app.getToken())
+                                                // .addParams("buildingUuid",result[0])
+                                                // .addParams("timeId",msg.arg1+"")
+                                                // .addParams("floorsMajor",result[1])
+                                                // .addParams("roomMinor",result[2])
+                                                //  .addParams("id",app.getStuid())
+
+                                                .url(requrl).build()
+                                                .execute(new StringCallback() {
+                                                    @Override
+                                                    public void onError(Call call, Exception e, int id) {
+
+                                                    }
+
+                                                    @Override
+                                                    public void onResponse(String response, int id) {
+                                                        try {
+                                                            JSONObject getres = new JSONObject(response);
+                                                            if (getres.getInt("code") == 200) {
+                                                                String authmd5 = getres.getString("data");
+
+                                                                Intent it = new Intent(context, CameraSignInActivity.class);
+                                                                Bundle datas = new Bundle();
+                                                                datas.putString("md5", authmd5);
+                                                                datas.putString("id", app.getStuid());
+                                                                datas.putString("buildingUuid", result[0]);
+                                                                datas.putInt("floorsMajor", Integer.parseInt(result[1]));
+                                                                datas.putInt("roomMinor", Integer.parseInt(result[2]));
+                                                                datas.putInt("timeId", timeid);
+                                                                it.putExtra("datas", datas);
+                                                                context.startActivity(it);
+                                                                // ((Activity) context).startActivityForResult(it,0x200);
+
+
+                                                            } else {
+                                                                Toast.makeText(context, new JSONObject(response).getString("msg"), Toast.LENGTH_SHORT).show();
+                                                            }
+
+
+                                                        } catch (JSONException e) {
+                                                            e.printStackTrace();
+                                                        }
+                                                    }
+                                                });
+
+                                    }
+                                }).start();
+                            }
+                        }
+
+
+                    }
+                }
+            }
+        };
 
         holder.tvcoursedate.setText(datalist.get(position).getDate());
         holder.tvcoursestatus.setText(datalist.get(position).getCoursestatus() + "");
@@ -97,6 +195,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.tvcoursenum.setText(datalist.get(position).getCoursenum());
         holder.tvcoursename.setText(datalist.get(position).getCoursename());
         holder.tvcoursetime.setText(datalist.get(position).getCoursetime());
+        //  Log.e("drtdrgtdfgcfgd",datalist.get(position).getCourseposition());
         holder.tvcourseposition.setText(datalist.get(position).getCourseposition());
         holder.tvcourseteacher.setText(datalist.get(position).getTeachername());
 
@@ -104,7 +203,21 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showPopupMenu(v, position);
+                // showPopupMenu(v, position);
+
+                // Toast.makeText(context, "timeid"+holder.tvcoursenum.getText().toString(), Toast.LENGTH_SHORT).show();
+
+                BTUtils btUtils = new BTUtils(context, handler, Integer.parseInt(holder.tvcoursenum.getText().toString()));
+                btUtils.startscanner((int) marjor.get(pos), (int) minor.get(pos));
+
+//                if(scanresult!=null){
+//
+//             }
+//             else {
+//                 Toast.makeText(context, "error", Toast.LENGTH_SHORT).show();
+//             }
+
+
                 //  Toast.makeText(context, "You click card" + pos, Toast.LENGTH_SHORT).show();
             }
         });
@@ -228,4 +341,5 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             tvcoursetime = itemView.findViewById(R.id.tv_card_course_time);
         }
     }
+
 }

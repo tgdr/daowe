@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:padding="10dp">
+
+    <LinearLayout
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:textSize="25dp"
+            android:id="@+id/tv_qjtime"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:text="1970年1月1日 星期一"
+            android:layout_width="wrap_content" />
+
+        <TextView
+            android:textSize="15dp"
+            android:id="@+id/tv_qjdetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="第1节-第13节" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+
+        <TextView
+            android:id="@+id/tv_qjtype"
+            android:textSize="15dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="病假" />
+    </LinearLayout>
+
+
+</LinearLayout>

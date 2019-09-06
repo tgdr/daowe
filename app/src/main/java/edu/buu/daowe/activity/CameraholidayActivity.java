@@ -1,6 +1,7 @@
 package edu.buu.daowe.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
@@ -16,16 +17,8 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.baidubce.services.bos.BosClient;
-import com.baidubce.services.bos.model.ObjectMetadata;
-import com.baidubce.services.bos.model.PutObjectRequest;
-
-import java.io.ByteArrayInputStream;
-
 import edu.buu.daowe.DaoWeApplication;
 import edu.buu.daowe.R;
-import edu.buu.daowe.Util.BosUtils;
-import edu.buu.daowe.http.BaseRequest;
 
 public class CameraholidayActivity extends Activity {
     ImageView mIvScan;
@@ -188,43 +181,53 @@ public class CameraholidayActivity extends Activity {
 
                 //  iv.setImageBitmap(bm);
                 Toast.makeText(CameraholidayActivity.this, "拍照成功！", Toast.LENGTH_SHORT).show();
-                new Thread(new Runnable() {
+                runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        //    Log.e(TAG, Base64Util.encode(data));
-                        ObjectMetadata meta = new ObjectMetadata();
+                        Toast.makeText(CameraholidayActivity.this, "66666", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(CameraholidayActivity.this, MainActivity.class);
+                        Bundle bundle = new Bundle();
+                        //  bundle.putParcelable("bitmap", bm);
+                        bundle.putByteArray("bitmapdata", data);
 
-                        // 自定义元数据
-                        meta.setContentType("image/jpeg");
-                        BosClient client = new BosClient(BosUtils.initBosClientConfiguration());    //创建BOSClient实例
-                        // 获取数据流
-                        // 以数据流形式上传Object
-                        ObjectMetadata objectMetadata = new ObjectMetadata();
-                        objectMetadata.setContentType("image/jpeg");
-                        PutObjectRequest request = new PutObjectRequest(BaseRequest.LEAVEREQ, app.getStuid() + "-" + System.currentTimeMillis() + ".jpg",
-                                new ByteArrayInputStream(data), objectMetadata);
-                        request.setObjectMetadata(objectMetadata);
-                        final String eTag = client.putObject(request).getETag();
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(CameraholidayActivity.this, eTag, Toast.LENGTH_SHORT).show();
-                            }
-                        });
-//                        OkHttpUtils.get().addHeader("Authorization", "Bearer " + app.getToken()).addHeader("Content-Type", "application/json")
-//                                .url(BaseRequest.BASEURL + "tools/" + app.getStuid() + "/face").build().execute(new StringCallback() {
-//                            @Override
-//                            public void onError(Call call, Exception e, int id) {
-//                                // Log.e(TAG,e.toString());
-//                            }
-//
-//                            @Override
-//                            public void onResponse(String response, int id) {
-//
-//                            }
-//                        });
+                        intent.putExtras(bundle);
+                        setResult(0x520, intent);
+                        finish();
+
                     }
-                }).start();
+                });
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        //    Log.e(TAG, Base64Util.encode(data));
+//                        ObjectMetadata meta = new ObjectMetadata();
+//
+//                        // 自定义元数据
+//                        meta.setContentType("image/jpeg");
+//                        BosClient client = new BosClient(BosUtils.initBosClientConfiguration());    //创建BOSClient实例
+//                        // 获取数据流
+//                        // 以数据流形式上传Object
+//                        ObjectMetadata objectMetadata = new ObjectMetadata();
+//                        objectMetadata.setContentType("image/jpeg");
+//                        PutObjectRequest request = new PutObjectRequest(BaseRequest.LEAVEREQ, app.getStuid() + "-" + System.currentTimeMillis() + ".jpg",
+//                                new ByteArrayInputStream(data), objectMetadata);
+//                        request.setObjectMetadata(objectMetadata);
+//                        final String eTag = client.putObject(request).getETag();
+//
+////                        OkHttpUtils.get().addHeader("Authorization", "Bearer " + app.getToken()).addHeader("Content-Type", "application/json")
+////                                .url(BaseRequest.BASEURL + "tools/" + app.getStuid() + "/face").build().execute(new StringCallback() {
+////                            @Override
+////                            public void onError(Call call, Exception e, int id) {
+////                                // Log.e(TAG,e.toString());
+////                            }
+////
+////                            @Override
+////                            public void onResponse(String response, int id) {
+////
+////                            }
+////                        });
+//                    }
+//                }).start();
 
 
             }

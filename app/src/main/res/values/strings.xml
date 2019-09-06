@@ -211,7 +211,7 @@
             <item>11</item>
         </string-array>
     <string-array name="selectqjtype">
-        <item>事假</item>
+        <item>事假</item>  <!-- 病3 事4 -->
         <item>病假</item>
 
     </string-array>

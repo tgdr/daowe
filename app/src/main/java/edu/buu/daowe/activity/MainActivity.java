@@ -64,6 +64,7 @@ import edu.buu.daowe.dialogue.ModifyPhotoBottomDialog;
 import edu.buu.daowe.fragment.ApplicateFragment;
 import edu.buu.daowe.fragment.CardShowClassFragment;
 import edu.buu.daowe.fragment.CheckInFragment;
+import edu.buu.daowe.fragment.DestoryinFragment;
 import edu.buu.daowe.fragment.MemoFragment;
 import edu.buu.daowe.fragment.SchooClalendarFragment;
 import edu.buu.daowe.fragment.Three_Fragment;
@@ -213,12 +214,11 @@ public class MainActivity extends AppCompatActivity
 
     private void initData() {
 
+        //  btUtils.startscanner();
         //setSupportActionBar(mToolbar);
         mFragments = new ArrayList<>();
 //添加全部备忘录的fragment
         synchronized (mFragments) {    //同步锁：同步监听对象/ 同步监听器 /互斥锁
-
-
             Bundle bundleall = new Bundle();
             bundleall.putInt("mark", 3);
             MemoFragment alldatafg = new MemoFragment();
@@ -246,16 +246,10 @@ public class MainActivity extends AppCompatActivity
 
         mFragments.add(new CardShowClassFragment());
         mFragments.add(new UserCenter_Fragment());
-
-
         mFragments.add(new CheckInFragment());
-
-
         mFragments.add(new CheckInFragment());
         mFragments.add(new ApplicateFragment());
-
-
-
+        mFragments.add(new DestoryinFragment());
         // mFragments.add(new CancellationFragment());
         // mFragments.add(new AccountFragment());
         // 初始化展示MessageFragment
@@ -382,8 +376,7 @@ public class MainActivity extends AppCompatActivity
 //            transaction.replace(R.id.main_frame,new CancellationFragment()).commit();
             mybar.setVisibility(View.VISIBLE);
             toolbar.setVisibility(View.VISIBLE);
-            Intent it = new Intent(MainActivity.this, CameraholidayActivity.class);
-            startActivity(it);
+            setFragmentPosition(10);
 
 
         } else if (id == R.id.nav_logout) {

@@ -1,6 +1,7 @@
 package edu.buu.daowe.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
@@ -45,13 +46,33 @@ public class CameraSignInActivity extends Activity {
     private Camera camera;
     private Camera.ShutterCallback shutter;
     private Camera.PictureCallback jepg;
+    Intent it;
+    Bundle datas;
 
+    JSONObject senddata;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_face_main);
         app = (DaoWeApplication) getApplication();
-        initview();
+        it = getIntent();
+        datas = it.getBundleExtra("datas");
+        if (datas != null) {
+            setContentView(R.layout.activity_face_main);
+
+            senddata = new JSONObject();
+            senddata.put("buildingUuid", datas.getString("buildingUuid"));
+            senddata.put("md5", datas.getString("md5"));
+            senddata.put("floorsMajor", datas.getInt("floorsMajor"));
+            senddata.put("roomMinor", datas.getInt("roomMinor"));
+            senddata.put("timeId", datas.getInt("timeId"));
+            senddata.put("id", datas.getString("id"));
+            initview();
+
+        } else {
+            this.finish();
+        }
+
+
     }
 
     private void initview() {
@@ -226,24 +247,65 @@ public class CameraSignInActivity extends Activity {
                                                 .url("https://aip.baidubce.com/rest/2.0/face/v3/match?access_token=" + accesstoken).build().execute(new StringCallback() {
                                             @Override
                                             public void onError(Call call, Exception e, int id) {
-                                                Log.e(TAG, e.toString());
+                                                //     Log.e(TAG, e.toString());
                                             }
 
                                             @Override
                                             public void onResponse(final String response, int id) {
-                                                Log.e(TAG, response);
+                                                //   Log.e(TAG, response);
                                                 try {
                                                     org.json.JSONObject result = new org.json.JSONObject(response);
                                                     if (result.getInt("error_code") == 0) {
                                                         result = new org.json.JSONObject(result.getString("result"));
-                                                        final double score = result.getDouble("score");
-
-                                                        runOnUiThread(new Runnable() {
+                                                        final float score = (float) result.getDouble("score");
+                                                        senddata.put("score", score);
+                                                        //    Log.e("tagtag",senddata.toJSONString());
+                                                        OkHttpUtils.postString().addHeader("Authorization", "Bearer " + app.getToken()).mediaType(MediaType.parse("application/json; charset=utf-8")).content(senddata.toJSONString())
+                                                                .url(BaseRequest.BASEURL + "users/sign").build().execute(new StringCallback() {
                                                             @Override
-                                                            public void run() {
-                                                                Toast.makeText(CameraSignInActivity.this, score + "", Toast.LENGTH_SHORT).show();
+                                                            public void onError(Call call, Exception e, int id) {
+                                                                Log.e("tagtag", e.getMessage());
+                                                            }
+
+                                                            @Override
+                                                            public void onResponse(String response, int id) {
+                                                                try {
+                                                                    final org.json.JSONObject data = new org.json.JSONObject(response);
+                                                                    if (data.getInt("code") == 200) {
+                                                                        runOnUiThread(new Runnable() {
+                                                                            @Override
+                                                                            public void run() {
+                                                                                try {
+                                                                                    if (data.getString("data").equals("1")) {
+                                                                                        Toast.makeText(CameraSignInActivity.this, "签到成功", Toast.LENGTH_SHORT).show();
+                                                                                        finish();
+                                                                                    }
+
+                                                                                } catch (JSONException e) {
+                                                                                    e.printStackTrace();
+                                                                                }
+                                                                            }
+                                                                        });
+                                                                    } else {
+                                                                        runOnUiThread(new Runnable() {
+                                                                            @Override
+                                                                            public void run() {
+                                                                                try {
+                                                                                    Toast.makeText(CameraSignInActivity.this, data.getString("data"), Toast.LENGTH_SHORT).show();
+                                                                                    finish();
+                                                                                } catch (JSONException e) {
+                                                                                    e.printStackTrace();
+                                                                                }
+                                                                            }
+                                                                        });
+                                                                    }
+                                                                } catch (JSONException e) {
+                                                                    e.printStackTrace();
+                                                                }
+
                                                             }
                                                         });
+
                                                     }
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
