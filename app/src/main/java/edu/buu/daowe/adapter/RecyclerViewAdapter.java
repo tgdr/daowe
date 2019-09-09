@@ -111,8 +111,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
                             double distanceforclassroom = Double.parseDouble(result[3]);
                             final int timeid = msg.arg2;
+                            //   Log.e("distance",distanceforclassroom+"");
                             if (distanceforclassroom > 10) {
-                                Toast.makeText(context, "当前距离教室" + distanceforclassroom + "m不能发起签到请求", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, "当前距离教室" + (float) distanceforclassroom + "m不能发起签到请求", Toast.LENGTH_SHORT).show();
+
                             } else {
                                 new Thread(new Runnable() {
                                     @Override
@@ -207,9 +209,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 // showPopupMenu(v, position);
 
                 // Toast.makeText(context, "timeid"+holder.tvcoursenum.getText().toString(), Toast.LENGTH_SHORT).show();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        BTUtils btUtils = new BTUtils(context, handler, Integer.parseInt(holder.tvcoursenum.getText().toString()));
+                        btUtils.startscanner((int) marjor.get(pos), (int) minor.get(pos));
+                    }
+                }).start();
 
-                BTUtils btUtils = new BTUtils(context, handler, Integer.parseInt(holder.tvcoursenum.getText().toString()));
-                btUtils.startscanner((int) marjor.get(pos), (int) minor.get(pos));
 
 //                if(scanresult!=null){
 //

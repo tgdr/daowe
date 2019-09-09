@@ -78,11 +78,14 @@ public class BTUtils {
                         }
 
                     } else {
-                        Message msg = new Message();
-                        msg.arg2 = -1;
-                        msg.what = 0x521;
-                        msg.obj = null;
-                        handler.sendMessage(msg);
+                        if (ppflag == false) {
+                            Message msg = new Message();
+                            msg.arg2 = -1;
+                            msg.what = 0x521;
+                            msg.obj = null;
+                            handler.sendMessage(msg);
+                        }
+
                     }
                     Beacon beacon = new Beacon(device.scanRecord);
 
