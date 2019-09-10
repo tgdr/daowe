@@ -21,6 +21,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.JsonObject;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
@@ -100,8 +101,21 @@ public class Register_two_Fragment extends Fragment implements TextWatcher {
 
                     @Override
                     public void onResponse(String response, int id) {
-                        smssuccess = true;
-                        Toast.makeText(getActivity(), "验证码发送成功请查收", Toast.LENGTH_SHORT).show();
+                        try {
+                            JSONObject getresult = new JSONObject(response);
+                            if(getresult.getInt("code")==200){
+                                smssuccess = true;
+                                Toast.makeText(getActivity(), "验证码发送成功请查收", Toast.LENGTH_SHORT).show();
+                            }
+                            else{
+                                smssuccess = false;
+                                Toast.makeText(getActivity(), "超出发送次数上限请过一段时间再试！", Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
                     }
                 });
 

@@ -155,6 +155,7 @@ public class CameraSignInActivity extends Activity {
                     if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
                         try {
                             camera = Camera.open(i);
+                            Log.e("fontcamerainfo",i+"");
                         } catch (RuntimeException e) {
                             e.printStackTrace();
                         }
@@ -209,12 +210,12 @@ public class CameraSignInActivity extends Activity {
                                 .url(BaseRequest.BASEURL + "tools/" + app.getStuid() + "/face").build().execute(new StringCallback() {
                             @Override
                             public void onError(Call call, Exception e, int id) {
-                                // Log.e(TAG,e.toString());
+                              //   Log.e(TAG,e.toString());
                             }
 
                             @Override
                             public void onResponse(String response, int id) {
-
+                             //   Log.e(TAG,response);
                                 try {
                                     org.json.JSONObject mydata = new org.json.JSONObject(response);
                                     if (mydata.getInt("code") == 200) {
@@ -247,12 +248,12 @@ public class CameraSignInActivity extends Activity {
                                                 .url("https://aip.baidubce.com/rest/2.0/face/v3/match?access_token=" + accesstoken).build().execute(new StringCallback() {
                                             @Override
                                             public void onError(Call call, Exception e, int id) {
-                                                //     Log.e(TAG, e.toString());
+                                                  //   Log.e(TAG, e.toString());
                                             }
 
                                             @Override
                                             public void onResponse(final String response, int id) {
-                                                //   Log.e(TAG, response);
+                                                   Log.e(TAG, response);
                                                 try {
                                                     org.json.JSONObject result = new org.json.JSONObject(response);
                                                     if (result.getInt("error_code") == 0) {
@@ -264,11 +265,13 @@ public class CameraSignInActivity extends Activity {
                                                                 .url(BaseRequest.BASEURL + "users/sign").build().execute(new StringCallback() {
                                                             @Override
                                                             public void onError(Call call, Exception e, int id) {
-                                                                Log.e("tagtag", e.getMessage());
+                                                               e.printStackTrace();
+                                                            //    Log.e("tagtag", e.printStackTrace());
                                                             }
 
                                                             @Override
                                                             public void onResponse(String response, int id) {
+                                                                Log.e("fadfadfsdfsdfsdf",response);
                                                                 try {
                                                                     final org.json.JSONObject data = new org.json.JSONObject(response);
                                                                     if (data.getInt("code") == 200) {
@@ -276,7 +279,7 @@ public class CameraSignInActivity extends Activity {
                                                                             @Override
                                                                             public void run() {
                                                                                 try {
-                                                                                    if (data.getString("data").equals("1")) {
+                                                                                    if (data.getString("msg").equals("成功的操作")) {
                                                                                         Toast.makeText(CameraSignInActivity.this, "签到成功", Toast.LENGTH_SHORT).show();
                                                                                         finish();
                                                                                     }
@@ -286,12 +289,14 @@ public class CameraSignInActivity extends Activity {
                                                                                 }
                                                                             }
                                                                         });
-                                                                    } else {
+                                                                    }
+
+                                                                    else {
                                                                         runOnUiThread(new Runnable() {
                                                                             @Override
                                                                             public void run() {
                                                                                 try {
-                                                                                    Toast.makeText(CameraSignInActivity.this, data.getString("data"), Toast.LENGTH_SHORT).show();
+                                                                                    Toast.makeText(CameraSignInActivity.this, data.getString("msg"), Toast.LENGTH_SHORT).show();
                                                                                     finish();
                                                                                 } catch (JSONException e) {
                                                                                     e.printStackTrace();

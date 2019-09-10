@@ -112,7 +112,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                             double distanceforclassroom = Double.parseDouble(result[3]);
                             final int timeid = msg.arg2;
                             //   Log.e("distance",distanceforclassroom+"");
-                            if (distanceforclassroom > 10) {
+                            if (distanceforclassroom > 5) {
                                 Toast.makeText(context, "当前距离教室" + (float) distanceforclassroom + "m不能发起签到请求", Toast.LENGTH_SHORT).show();
 
                             } else {
@@ -133,12 +133,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                                                 .execute(new StringCallback() {
                                                     @Override
                                                     public void onError(Call call, Exception e, int id) {
-
+                                                        Log.e("callffffffffff",e.getMessage());
                                                     }
 
                                                     @Override
                                                     public void onResponse(String response, int id) {
-                                                        Log.e("rererere", response);
+                                                        Log.e("ffffffffffffffffffff", response);
                                                         try {
                                                             JSONObject getres = new JSONObject(response);
                                                             if (getres.getInt("code") == 200) {

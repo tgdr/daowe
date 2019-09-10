@@ -81,14 +81,20 @@ public class ApplicateFragment extends Fragment implements View.OnFocusChangeLis
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // TODO Auto-generated method stub
         super.onActivityResult(requestCode, resultCode, data);
-        Bundle bundle = data.getExtras();
-        picdata = bundle.getByteArray("bitmapdata");
+
+        try {
+            Bundle bundle = data.getExtras();
+            picdata = bundle.getByteArray("bitmapdata");
 //        Bitmap bitmap = bundle.getParcelableArray("bitmap");
-        if (imgupload != null) {
-            final Bitmap bm = BitmapFactory.decodeByteArray(picdata, 0, picdata.length);
-            imgupload.setImageBitmap(bm);
-            imgflag = true;
+            if (imgupload != null) {
+                final Bitmap bm = BitmapFactory.decodeByteArray(picdata, 0, picdata.length);
+                imgupload.setImageBitmap(bm);
+                imgflag = true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
 
     }
 
